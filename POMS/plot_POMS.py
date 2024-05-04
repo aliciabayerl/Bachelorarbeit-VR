@@ -1,20 +1,22 @@
 import pandas as pd
 import seaborn as sns
+import os
 import matplotlib.pyplot as plt
 
-# Read the participant scores CSV file into a pandas DataFrame
-participant_scores = pd.read_csv('participant_scores.csv')
+# Plot average before and after mood of all conditions
 
-# Exclude the first column (presumably participant ID or name)
-participant_scores = participant_scores.iloc[:, 1:]
+folder_path = 'POMS'
+input_file = 'participant_scores.csv'
+image_path = 'POMS/Plot_Images'
+file_path = os.path.join(folder_path, input_file)
+participant_scores = pd.read_csv(file_path)
 
-# Calculate the mean scores for each mood state
+participant_scores = participant_scores.iloc[:, 2:]
+
 mean_scores = participant_scores.mean().reset_index()
 
-# Melt the DataFrame to make it suitable for plotting
 melted_scores = mean_scores.melt(id_vars=['index'], var_name='Time', value_name='Mean Score')
 
-# Plot the average mood states before and after
 plt.figure(figsize=(12, 8))
 sns.barplot(x='index', y='Mean Score', hue='Time', data=melted_scores)
 plt.title('Average Mood States Before and After')
@@ -23,5 +25,9 @@ plt.ylabel('Mean Score')
 plt.xticks(rotation=45)
 plt.legend(title='Time', bbox_to_anchor=(1.05, 1), loc='upper left')
 plt.tight_layout()
+
+output_image = os.path.join(image_path, 'all_conditions_plot.png')
+plt.savefig(output_image)
+
 plt.show()
 

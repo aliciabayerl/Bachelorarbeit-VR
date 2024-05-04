@@ -1,6 +1,7 @@
 import pandas as pd
+import os
 
-# Define the conversion function for POMS values
+# conversion of POMS values
 def convert_poms_values(value):
     if value == "Not at all":
         return 0
@@ -13,18 +14,17 @@ def convert_poms_values(value):
     elif value == "Extremely":
         return 4
     else:
-        return value  # Return the original value if it doesn't match any of the specified strings
+        return value 
 
-# Function to convert POMS columns in the DataFrame
+# Function to convert poms values
 def convert_poms_columns(df):
     for column in df.columns:
         if "POMS Before >>" in column or "POMS After >>" in column:
             df[column] = df[column].apply(convert_poms_values)
     return df
 
-# Function to calculate POMS scores for each participant
+# Function to calculate score with mapping
 def calculate_poms_scores(df):
-    # Define mood states corresponding to each score
     score_mappings = {
         'Tension': ['Panicky', 'Anxious', 'Nervous'],
         'Vigor': ['Lively', 'Energetic', 'Active', 'Alert'],
@@ -33,22 +33,18 @@ def calculate_poms_scores(df):
         'Depression': ['Depressed', 'Downhearted', 'Unhappy', 'Miserable']
     }
     
-    # Create a new DataFrame to store before and after POMS scores for each participant
+    # Seperate data to store before and after scores 
     participant_scores = pd.DataFrame(columns=['Participant', 'Condition', 'Before Tension', 'After Tension', 'Before Vigor', 'After Vigor',
                                                'Before Confusion', 'After Confusion', 'Before Fatigue', 'After Fatigue',
                                                'Before Depression', 'After Depression'])
     
-    # Iterate over each participant
     for index, participant in df.iterrows():
-        # Initialize scores for before and after for the participant
         participant_scores.loc[index] = [index + 1, participant['Condition']] + [0] * 10
         
-        # Calculate before and after POMS scores for the participant
         for score, mood_states in score_mappings.items():
-            # Initialize score for the mood state for before and after
             mood_state_score_before = 0
             mood_state_score_after = 0
-            # Calculate score for the mood state for before and after
+
             for col in df.columns:
                 if "POMS Before >>" in col and col.split(" >> ")[1] in mood_states:
                     mood_state_score_before += convert_poms_values(participant[col])
@@ -59,34 +55,23 @@ def calculate_poms_scores(df):
     
     return participant_scores
 
-# Read the CSV file into a pandas DataFrame
+folder_path = 'POMS'
 input_file = 'questionnaire.csv'
-data = pd.read_csv(input_file)
+file_path = os.path.join(folder_path, input_file)
+data = pd.read_csv(file_path)
 
 
-# Convert POMS values in the DataFrame
 converted_data = convert_poms_columns(data)
 
-# Calculate POMS scores for each participant
 participant_scores = calculate_poms_scores(converted_data)
 
-# Save the participant scores to a new CSV file
-output_file = 'participant_scores.csv'
+output_file = 'POMS/participant_scores.csv'
 participant_scores.to_csv(output_file, index=False)
 
 print("Participant scores saved to:", output_file)
 
-# Merge the participant scores DataFrame with the original questionnaire DataFrame
+# Merge participant scores with original questionnaire and save in new
 merged_data = pd.merge(data, participant_scores, left_index=True, right_index=True)
 
-# Save the merged DataFrame to a new CSV file
-output_file_merged = 'questionnaire_with_scores.csv'
+output_file_merged = 'POMS/questionnaire_with_scores.csv'
 merged_data.to_csv(output_file_merged, index=False)
-
-print("Merged data with participant scores saved to:", output_file_merged)
-
-import pandas as pd
-
-# Read the participant scores CSV file
-participant_scores = pd.read_csv('participant_scores.csv')
-
