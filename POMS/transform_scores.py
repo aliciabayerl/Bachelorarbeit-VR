@@ -155,11 +155,9 @@ participant_scores_deq.to_csv(output_file2, index=False)
 
 print("Participant scores saved to:", output_file)
 
-# Merge participant scores with original questionnaire and save in new
-merged_data = pd.merge(data, participant_scores, left_index=True, right_index=True)
-merged_data2 = pd.merge(data, participant_scores_deq, left_index=True, right_index=True)
+combined_scores = pd.merge(participant_scores, participant_scores_deq, on=['Participant', 'Condition'])
 
-output_file_merged = 'POMS/questionnaire_with_scores.csv'
-output_file_merged2 = 'POMS/questionnaire_with_scores.csv'
-merged_data.to_csv(output_file_merged, index=False)
-merged_data2.to_csv(output_file_merged2, index=False)
+merged_questionnaire = pd.merge(data, combined_scores, left_index=True, right_index=True)
+
+output_file_combined = 'POMS/questionnaire_with_scores.csv'
+merged_questionnaire.to_csv(output_file_combined, index=False)
