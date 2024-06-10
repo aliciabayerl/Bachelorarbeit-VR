@@ -1,0 +1,39 @@
+# Plotting the changes
+import pandas as pd
+import os
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Define folder and file paths
+folder_path = 'POMS'
+image_path = 'POMS/Plot_Images'
+input_file = 'participant_scores_psq.csv'
+file_path = os.path.join(folder_path, input_file)
+
+# Read the participant scores data
+participant_scores = pd.read_csv(file_path)
+
+# Define mood states
+mood_states = ['Worries', 'Tension', 'Joy', 'Demands']
+
+# Calculate overall average PSQ scores for each mood state
+average_scores = [participant_scores[mood_state].mean() for mood_state in mood_states]
+
+# Create a bar plot
+fig, ax = plt.subplots(figsize=(10, 6))
+
+ax.bar(mood_states, average_scores, color='skyblue')
+
+# Set plot labels and title
+ax.set_xlabel('Mood State')
+ax.set_ylabel('Average Score')
+ax.set_title('Overall Average PSQ Scores')
+plt.grid(True)
+
+# Save plot
+output_image = os.path.join(image_path, 'PSQ_overall_average_scores_plot.png')
+plt.savefig(output_image)
+
+# Show plot
+plt.show()
+
