@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 folder_path = 'POMS'
+image_path = 'POMS/Plot_Images'
 input_file = 'questionnaire_with_scores.csv'
 file_path = os.path.join(folder_path, input_file)
 data = pd.read_csv(file_path)
@@ -34,4 +35,9 @@ plt.title('Average Change in Mood States for Participants with and without Motio
 plt.xticks(index + bar_width / 2, mood_states)
 plt.legend()
 plt.tight_layout()
+
+# Save plot
+output_image = os.path.join('POMS/Plot_Images', 'POMS_sickness_comparison_plot.png')
+plt.savefig(output_image)
+
 plt.show()
