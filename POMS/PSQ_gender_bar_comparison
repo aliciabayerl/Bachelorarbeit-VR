@@ -1,0 +1,37 @@
+import pandas as pd
+import os
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+folder_path = 'POMS'
+image_path = 'POMS/Plot_Images'
+input_file = 'participant_scores_psq.csv'
+file_path = os.path.join(folder_path, input_file)
+participant_scores = pd.read_csv(file_path)
+
+genders = participant_scores['Gender'].unique()
+mood_states = ['Worries', 'Tension', 'Joy', 'Demands']
+bar_width = 0.2
+index = range(len(mood_states))
+
+fig, ax = plt.subplots(figsize=(12, 8))
+
+for i, gender in enumerate(genders):
+    gender_data = participant_scores[participant_scores['Gender'] == gender]
+    mean_scores = [gender_data[mood_state].mean() for mood_state in mood_states]
+    ax.bar([x + i * bar_width for x in index], mean_scores, bar_width, label=f'Gender: {gender}')
+
+ax.set_xlabel('Mood State')
+ax.set_ylabel('Average Score')
+ax.set_title('Average PSQ Scores by Gender')
+ax.set_xticks([x + 0.5 * bar_width for x in index])
+ax.set_xticklabels(mood_states)
+ax.legend(title='Gender')
+plt.grid(True)
+
+# Save plot
+output_image = os.path.join(image_path, 'PSQ_average_scores_by_gender_bar_plot.png')
+plt.savefig(output_image)
+
+plt.show()
+

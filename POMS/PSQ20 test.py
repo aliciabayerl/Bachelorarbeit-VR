@@ -52,10 +52,14 @@ def calculate_psq_scores(df):
 
     first_participant_name = df.iloc[0]['Name']
     print("Name of the first participant:", first_participant_name)
-    participant_scores_psq = pd.DataFrame(columns=['Participant', 'Condition', 'Worries', 'Tension', 'Joy', 'Demands'])
+    participant_scores_psq = pd.DataFrame(columns=['Participant', 'Condition', 'Gender', 'Worries', 'Tension', 'Joy', 'Demands'])
 
+    #for index, participant in df.iterrows():
+       # participant_scores_psq.loc[index] = [index + 1, participant['Condition']] + [0] * (len(participant_scores_psq.columns) - 2)
+     # Iterate over participants to calculate their scores
+        # Iterate over participants to calculate their scores
     for index, participant in df.iterrows():
-        participant_scores_psq.loc[index] = [index + 1, participant['Condition']] + [0] * (len(participant_scores_psq.columns) - 2)
+        participant_scores_psq.loc[index] = [index + 1, participant['Condition'], participant['Gender'], 0, 0, 0, 0]
 
         for score, mood_states in score_mappings.items():
             mood_state_score = 0
