@@ -12,6 +12,20 @@ data = pd.read_csv(file_path)
 motion_sickness = data[data['Did you experience any discomfort or adverse effects (physical or emotional, like nausea/dizziness due to motion sickness) during or after the virtual reality experience?'] == 'Yes']
 no_motion_sickness = data[data['Did you experience any discomfort or adverse effects (physical or emotional, like nausea/dizziness due to motion sickness) during or after the virtual reality experience?'] == 'No']
 
+motion_sickness_counts = motion_sickness.groupby('Condition_x').size()
+total_people_in_condition = data.groupby('Condition_x').size()
+
+motion_sickness_percentage = (motion_sickness_counts / total_people_in_condition) * 100
+
+""" Percentage of people with motion sickness in each condition:
+Condition_x
+0    50.000000
+1    50.000000
+2    78.571429 """
+
+print("Percentage of people with motion sickness in each condition:")
+print(motion_sickness_percentage)
+
 mood_states = ['Anger', 'Disgust', 'Fear', 'Anxiety', 'Sadness', 'Desire', 'Relaxation', 'Happiness']
 
 # Calculate the change in mood states for participants with and without motion sickness
