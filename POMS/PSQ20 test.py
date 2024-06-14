@@ -15,18 +15,17 @@ def convert_psq_values(value):
     else:
         return value
 
-
 def convert_psq_columns(df):
     for column in df.columns:
         if "PSQ20 >>" in column:
             df[column] = df[column].apply(convert_psq_values)
     return df
 
-
 def add_transformed_values(df):
     transformed_columns = ['PSQ20 >> You feel rested', 'PSQ20 >> You feel calm', 'PSQ20 >> You have enough time for yourself']
     for col in transformed_columns:
-        df[col] = 6 - df[col]  # Subtract the value from 6 to invert the score
+        df[col] = pd.to_numeric(df[col], errors='coerce')
+        df[col] = 6 - df[col]  
     return df
 
 folder_path = 'POMS'
@@ -35,12 +34,12 @@ output_file = 'POMS/questionnaire_with_transformed_scores.csv'
 
 data_with_scores = pd.read_csv(os.path.join(folder_path, input_file))
 
+data_with_scores = convert_psq_columns(data_with_scores)
 data_with_transformed_values = add_transformed_values(data_with_scores)
 
 data_with_transformed_values.to_csv(output_file, index=False)
 
 print("Transformed values added and saved to:", output_file)
-
 
 def calculate_psq_scores(df):
     score_mappings = {
@@ -54,10 +53,6 @@ def calculate_psq_scores(df):
     print("Name of the first participant:", first_participant_name)
     participant_scores_psq = pd.DataFrame(columns=['Participant', 'Condition', 'Gender', 'Worries', 'Tension', 'Joy', 'Demands'])
 
-    #for index, participant in df.iterrows():
-       # participant_scores_psq.loc[index] = [index + 1, participant['Condition']] + [0] * (len(participant_scores_psq.columns) - 2)
-     # Iterate over participants to calculate their scores
-        # Iterate over participants to calculate their scores
     for index, participant in df.iterrows():
         participant_scores_psq.loc[index] = [index + 1, participant['Condition'], participant['Gender'], 0, 0, 0, 0]
 
@@ -90,7 +85,6 @@ def calculate_psq_scores(df):
     print(participant_scores_psq)
 
     return participant_scores_psq
-
 
 folder_path = 'POMS'
 input_file = 'questionnaire.csv'
