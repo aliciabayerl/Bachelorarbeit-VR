@@ -41,4 +41,3 @@ print("Num ppl employed:", num_employed)
 print("Number of male participants:", gender_counts.get('Male', 0))
 print("Number of female participants:", gender_counts.get('Female', 0))
 print("Number of diverse participants:", gender_counts.get('Another gender', 0))
-
