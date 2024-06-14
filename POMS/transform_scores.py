@@ -78,29 +78,22 @@ def calculate_poms_scores(df):
         'Vigor': ['Lively', 'Energetic', 'Active', 'Alert'],
         'Confusion': ['Confused', 'Mixed up', 'Muddled', 'Uncertain'],
         'Fatigue': ['Worn out', 'Exhausted', 'Sleepy', 'Tired'],
+        'Anger': ['Angry', 'Annoyed', 'Bad tempered', 'Bitter'],
         'Depression': ['Depressed', 'Downhearted', 'Unhappy', 'Miserable']
     }
-    
-    # Seperate data to store before and after scores 
-    participant_scores = pd.DataFrame(columns=['Participant', 'Condition', 'Before Tension', 'After Tension', 'Before Vigor', 'After Vigor',
-                                               'Before Confusion', 'After Confusion', 'Before Fatigue', 'After Fatigue',
-                                               'Before Depression', 'After Depression'])
-    
-    for index, participant in df.iterrows():
-        participant_scores.loc[index] = [index + 1, participant['Condition']] + [0] * 10
-        
-        for score, mood_states in score_mappings.items():
-            mood_state_score_before = 0
-            mood_state_score_after = 0
 
-            for col in df.columns:
-                if "POMS Before >>" in col and col.split(" >> ")[1] in mood_states:
-                    mood_state_score_before += convert_poms_values(participant[col])
-                elif "POMS After >>" in col and col.split(" >> ")[1] in mood_states:
-                    mood_state_score_after += convert_poms_values(participant[col])
-            participant_scores.at[index, f'Before {score}'] = mood_state_score_before
-            participant_scores.at[index, f'After {score}'] = mood_state_score_after
-    
+    participant_scores = pd.DataFrame(columns=['Participant', 'Condition', 'Before Tension', 'After Tension', 'Before Vigor', 'After Vigor',
+                                               'Before Confusion', 'After Confusion', 'Before Fatigue', 'After Fatigue', 'Before Anger_x', 'After Anger_x',
+                                               'Before Depression', 'After Depression'])
+
+    for index, participant in df.iterrows():
+        scores = [index + 1, participant['Condition']]
+        for score, mood_states in score_mappings.items():
+            before_score = sum(participant[f"POMS Before >> {mood}"] for mood in mood_states)
+            after_score = sum(participant[f"POMS After >> {mood}"] for mood in mood_states)
+            scores.extend([before_score, after_score])
+        participant_scores.loc[index] = scores
+
     return participant_scores
 
 # Function to calculate score with mapping DEQ

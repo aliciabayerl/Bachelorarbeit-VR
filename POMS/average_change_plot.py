@@ -9,7 +9,7 @@ file_path = os.path.join(folder_path, input_file)
 participant_scores = pd.read_csv(file_path)
 
 
-mood_states = ['Tension', 'Vigor', 'Confusion', 'Fatigue', 'Depression']
+mood_states = ['Tension', 'Vigor', 'Confusion', 'Fatigue', 'Anger', 'Depression']
 
 # Calculate the change for each mood state from before to after
 for mood_state in mood_states:

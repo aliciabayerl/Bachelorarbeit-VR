@@ -12,7 +12,7 @@ data = pd.read_csv(file_path)
 motion_sickness = data[data['Did you experience any discomfort or adverse effects (physical or emotional, like nausea/dizziness due to motion sickness) during or after the virtual reality experience?'] == 'Yes']
 no_motion_sickness = data[data['Did you experience any discomfort or adverse effects (physical or emotional, like nausea/dizziness due to motion sickness) during or after the virtual reality experience?'] == 'No']
 
-mood_states = ['Tension', 'Depression', 'Anger', 'Vigor', 'Fatigue', 'Confusion']
+mood_states = ['Tension', 'Depression', 'Anger_x', 'Vigor', 'Fatigue', 'Confusion']
 
 # Calculate the change in mood states for participants with and without motion sickness
 for mood_state in mood_states:

@@ -3,6 +3,7 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 
+## DEQ 
 folder_path = 'POMS'
 image_path = 'POMS/Plot_Images'
 input_file = 'questionnaire_with_scores.csv'
