@@ -1,0 +1,98 @@
+import pandas as pd
+from scipy.stats import ttest_ind
+import os
+import matplotlib.pyplot as plt
+
+# Load the data
+folder_path = 'POMS'
+input_file = 'participant_scores.csv'
+image_path = 'POMS/Plot_Images'
+file_path = os.path.join(folder_path, input_file)
+data = pd.read_csv(file_path)
+
+# Print unique values in the Condition column to ensure correct mapping
+print("Unique Condition values:", data['Condition'].unique())
+
+# Calculate the difference between before and after mood states for each participant
+for mood in ['Tension', 'Vigor', 'Confusion', 'Fatigue', 'Depression']:
+    data[f'Difference_{mood}'] = data[f'After {mood}'] - data[f'Before {mood}']
+
+# Ensure the Condition mapping is correct
+data['Combined_Condition'] = data['Condition'].replace({
+    0: 'No Sound',
+    1: 'Auditory Stimuli',
+    2: 'Auditory Stimuli'
+})
+
+# Independent two-sample t-tests between no sound and auditory stimuli groups for each mood state
+mood_states = ['Tension', 'Vigor', 'Confusion', 'Fatigue', 'Depression']
+for mood in mood_states:
+    print(f"Statistical Analysis for {mood}:")
+
+    no_sound_diff = data[data['Combined_Condition'] == 'No Sound'][f'Difference_{mood}'].dropna()
+    auditory_stimuli_diff = data[data['Combined_Condition'] == 'Auditory Stimuli'][f'Difference_{mood}'].dropna()
+
+    # Check the sizes and basic stats of the groups
+    print(f"No Sound group size: {len(no_sound_diff)}, mean: {no_sound_diff.mean()}, std: {no_sound_diff.std()}")
+    print(f"Auditory Stimuli group size: {len(auditory_stimuli_diff)}, mean: {auditory_stimuli_diff.mean()}, std: {auditory_stimuli_diff.std()}")
+
+    if len(no_sound_diff) > 0 and len(auditory_stimuli_diff) > 0:
+        # Independent two-sample t-test
+        t_stat, p_val = ttest_ind(no_sound_diff, auditory_stimuli_diff)
+        print(f"No Sound vs. Auditory Stimuli: p-value = {p_val:.4f}")
+    else:
+        print("Insufficient data for t-test.")
+
+    print()
+
+#plot everything
+# Prepare lists to collect results for No Sound and Auditory Stimuli
+results_no_sound = []
+results_auditory_stimuli = []
+
+# Independent two-sample t-tests between no sound and auditory stimuli groups for each mood state
+mood_states = ['Tension', 'Vigor', 'Confusion', 'Fatigue', 'Depression']
+for mood in mood_states:
+    no_sound_diff = data[data['Combined_Condition'] == 'No Sound'][f'Difference_{mood}'].dropna()
+    auditory_stimuli_diff = data[data['Combined_Condition'] == 'Auditory Stimuli'][f'Difference_{mood}'].dropna()
+
+    if len(no_sound_diff) > 0 and len(auditory_stimuli_diff) > 0:
+        # Independent two-sample t-test
+        t_stat, p_val = ttest_ind(no_sound_diff, auditory_stimuli_diff)
+        
+        results_no_sound.append([mood, len(no_sound_diff), no_sound_diff.mean(), no_sound_diff.std(), p_val])
+        results_auditory_stimuli.append([mood, len(auditory_stimuli_diff), auditory_stimuli_diff.mean(), auditory_stimuli_diff.std(), p_val])
+    else:
+        results_no_sound.append([mood, len(no_sound_diff), None, None, None])
+        results_auditory_stimuli.append([mood, len(auditory_stimuli_diff), None, None, None])
+
+# Create DataFrames for No Sound and Auditory Stimuli results
+results_no_sound_df = pd.DataFrame(results_no_sound, columns=['Mood State', 'N', 'Mean', 'Std', 'p-value'])
+results_auditory_stimuli_df = pd.DataFrame(results_auditory_stimuli, columns=['Mood State', 'N', 'Mean', 'Std', 'p-value'])
+
+# Plot the compact table layout
+fig, (ax1, ax2) = plt.subplots(nrows=2, ncols=1, figsize=(10, 8))  # Two subplots, one for each condition
+ax1.axis('tight')
+ax1.axis('off')
+ax2.axis('tight')
+ax2.axis('off')
+
+# Plot the tables for No Sound and Auditory Stimuli
+table1 = ax1.table(cellText=results_no_sound_df.values, colLabels=results_no_sound_df.columns, cellLoc='center', loc='center')
+table1.auto_set_font_size(False)
+table1.set_fontsize(8)
+table1.auto_set_column_width(col=list(range(len(results_no_sound_df.columns))))
+ax1.set_title('No Sound', fontsize=12)
+
+table2 = ax2.table(cellText=results_auditory_stimuli_df.values, colLabels=results_auditory_stimuli_df.columns, cellLoc='center', loc='center')
+table2.auto_set_font_size(False)
+table2.set_fontsize(8)
+table2.auto_set_column_width(col=list(range(len(results_auditory_stimuli_df.columns))))
+ax2.set_title('Auditory Stimuli', fontsize=12)
+
+plt.suptitle('Statistical Analysis Results', fontsize=14)
+plt.tight_layout(rect=[0, 0.03, 1, 0.95])  # Adjust subplot layout
+
+output_image = os.path.join(image_path, 'POMS_statical_analysis.png')
+plt.savefig(output_image)
+plt.show()
