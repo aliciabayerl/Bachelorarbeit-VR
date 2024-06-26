@@ -2,6 +2,10 @@ import pandas as pd
 import os
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
+import os
+
+
 
 folder_path = 'POMS'
 image_path = 'POMS/Plot_Images'
@@ -41,3 +45,14 @@ output_image = os.path.join('POMS/Plot_Images', 'POMS_sickness_comparison_plot.p
 plt.savefig(output_image)
 
 plt.show()
+
+# new csv POMS no motion sickness
+columns_to_select = ['Condition_x', 'Before Tension', 'After Tension', 'Before Vigor', 'After Vigor', 
+                     'Before Confusion', 'After Confusion', 'Before Fatigue', 'After Fatigue', 
+                     'Before Anger_x', 'After Anger_x', 'Before Depression', 'After Depression']
+
+participant_scores = no_motion_sickness[columns_to_select]
+
+output_file = 'POMS_MS_participant_scores.csv'
+output_path = os.path.join(folder_path, output_file)
+participant_scores.to_csv(output_path, index=False)
