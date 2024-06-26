@@ -1,6 +1,8 @@
 import pandas as pd
 import pingouin as pg
 import os
+from statsmodels.stats.multicomp import MultiComparison
+
 
 folder_path = 'POMS'
 input_file = 'participant_scores.csv'
@@ -25,4 +27,10 @@ for mood in moods:
     aov = pg.mixed_anova(dv='Score', within='Time', between='Group', subject='Participant', data=mood_data)
     print(f"Mixed ANOVA results for {mood}:")
     print(aov)
+    print("\n")
+
+    mc = MultiComparison(mood_data['Score'], mood_data['Time'])
+    result = mc.tukeyhsd()
+    print(f"Post-hoc Tukey HSD tests for {mood}:")
+    print(result)
     print("\n")

@@ -52,7 +52,13 @@ columns_to_select = ['Participant', 'Condition_x', 'Before Tension', 'After Tens
                      'Before Anger_x', 'After Anger_x', 'Before Depression', 'After Depression']
 
 participant_scores = no_motion_sickness[columns_to_select]
+participant_scores_ms = motion_sickness[columns_to_select]
+
 
 output_file = 'POMS_MS_participant_scores.csv'
 output_path = os.path.join(folder_path, output_file)
 participant_scores.to_csv(output_path, index=False)
+
+output_file_ms = 'POMS_MSyes_participant_scores.csv'
+output_path_ms = os.path.join(folder_path, output_file_ms)
+participant_scores_ms.to_csv(output_path_ms, index=False)
