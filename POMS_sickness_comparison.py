@@ -47,7 +47,7 @@ plt.savefig(output_image)
 plt.show()
 
 # new csv POMS no motion sickness
-columns_to_select = ['Condition_x', 'Before Tension', 'After Tension', 'Before Vigor', 'After Vigor', 
+columns_to_select = ['Participant', 'Condition_x', 'Before Tension', 'After Tension', 'Before Vigor', 'After Vigor', 
                      'Before Confusion', 'After Confusion', 'Before Fatigue', 'After Fatigue', 
                      'Before Anger_x', 'After Anger_x', 'Before Depression', 'After Depression']
 
