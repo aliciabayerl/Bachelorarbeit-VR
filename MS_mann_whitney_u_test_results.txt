@@ -1,0 +1,6 @@
+Change_Tension: Statistics=15.5, p=0.2883974985477944
+Change_Vigor: Statistics=9.0, p=0.8175206026417641
+Change_Confusion: Statistics=15.0, p=0.3560382635897872
+Change_Fatigue: Statistics=18.0, p=0.10844842169579083
+Change_Anger: Statistics=15.0, p=0.3560382635897872
+Change_Depression: Statistics=16.5, p=0.20160241828250858

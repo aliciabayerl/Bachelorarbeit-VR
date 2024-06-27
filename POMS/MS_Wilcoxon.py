@@ -1,0 +1,49 @@
+import pandas as pd
+from scipy.stats import wilcoxon
+import os
+import numpy as np
+
+# Load your data
+folder_path = 'POMS'
+input_file = 'POMS_MS_participant_scores.csv'
+file_path = os.path.join(folder_path, input_file)
+data = pd.read_csv(file_path)
+
+# Define a function for bootstrapping
+def bootstrap(data, num_samples=1000):
+    n = len(data)
+    bootstrap_samples = np.random.choice(data, (num_samples, n), replace=True)
+    bootstrap_means = np.mean(bootstrap_samples, axis=1)
+    return np.percentile(bootstrap_means, [2.5, 97.5])
+
+alpha = 0.05
+
+# List of mood states to analyze
+mood_states = ['Tension', 'Vigor', 'Confusion', 'Fatigue', 'Anger_x', 'Depression']
+
+# Iterate over each condition and mood state
+for mood in mood_states:
+    before_col = f'Before {mood}'
+    after_col = f'After {mood}'
+    
+    # Extract actual columns from DataFrame
+    before_scores = data[before_col]
+    after_scores = data[after_col]
+    
+    # Perform Wilcoxon signed-rank test
+    stat, p_value = wilcoxon(before_scores, after_scores, zero_method='wilcox', correction=False, mode='exact')
+    
+    print(f'Change_{mood}: Statistics={stat:.3f}, p={p_value:.3f}')
+    
+    # Determine significance based on alpha level
+    if p_value < alpha:
+        print(f'Reject the null hypothesis: There is a significant change in {mood}.')
+    else:
+        print(f'Fail to reject the null hypothesis: There is no significant change in {mood}.')
+
+    # Apply bootstrapping only if there are enough samples
+    if len(before_scores) > 1 and len(after_scores) > 1:
+        ci = bootstrap(after_scores - before_scores)
+        print(f"95% Confidence Interval for {mood}: {ci}")
+    else:
+        print(f"Not enough data to perform bootstrap for {mood}.")
