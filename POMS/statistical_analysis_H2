@@ -14,7 +14,7 @@ data = pd.read_csv(file_path)
 print("Unique Condition values:", data['Condition'].unique())
 
 # Calculate the difference between before and after mood states for each participant
-for mood in ['Tension', 'Vigor', 'Confusion', 'Fatigue', 'Depression']:
+for mood in ['Tension', 'Vigor', 'Confusion', 'Fatigue','Anger_x', 'Depression']:
     data[f'Difference_{mood}'] = data[f'After {mood}'] - data[f'Before {mood}']
 
 # Ensure the Condition mapping is correct
@@ -25,7 +25,7 @@ data['Combined_Condition'] = data['Condition'].replace({
 })
 
 # Independent two-sample t-tests between no sound and auditory stimuli groups for each mood state
-mood_states = ['Tension', 'Vigor', 'Confusion', 'Fatigue', 'Depression']
+mood_states = ['Tension', 'Vigor', 'Confusion', 'Fatigue', 'Anger_x', 'Depression']
 for mood in mood_states:
     print(f"Statistical Analysis for {mood}:")
 
@@ -51,7 +51,7 @@ results_no_sound = []
 results_auditory_stimuli = []
 
 # Independent two-sample t-tests between no sound and auditory stimuli groups for each mood state
-mood_states = ['Tension', 'Vigor', 'Confusion', 'Fatigue', 'Depression']
+mood_states = ['Tension', 'Vigor', 'Confusion', 'Fatigue', 'Anger_x', 'Depression']
 for mood in mood_states:
     no_sound_diff = data[data['Combined_Condition'] == 'No Sound'][f'Difference_{mood}'].dropna()
     auditory_stimuli_diff = data[data['Combined_Condition'] == 'Auditory Stimuli'][f'Difference_{mood}'].dropna()
