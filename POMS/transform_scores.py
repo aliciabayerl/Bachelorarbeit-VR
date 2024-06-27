@@ -57,12 +57,12 @@ def calculate_poms_scores(df):
         'Confusion': ['Confused', 'Mixed up', 'Muddled', 'Uncertain'],
         'Fatigue': ['Worn out', 'Exhausted', 'Sleepy', 'Tired'],
         'Anger': ['Angry', 'Annoyed', 'Bad tempered', 'Bitter'],
-        'Depression': ['Depressed', 'Downhearted', 'Unhappy', 'Miserable']
+        'Depression': ['Depressed', 'Downhearted', 'Unhappy', 'Miserable', 'Sleepy']
     }
 
     participant_scores = pd.DataFrame(columns=['Participant', 'Condition', 'Before Tension', 'After Tension', 'Before Vigor', 'After Vigor',
                                                'Before Confusion', 'After Confusion', 'Before Fatigue', 'After Fatigue', 'Before Anger_x', 'After Anger_x',
-                                               'Before Depression', 'After Depression'])
+                                               'Before Depression', 'After Depression'],dtype=float)
 
     for index, participant in df.iterrows():
         scores = [index + 1, participant['Condition']]
@@ -98,7 +98,7 @@ def calculate_deq_scores(df):
                                                     'Before Sadness', 'After Sadness', 
                                                     'Before Desire', 'After Desire', 
                                                     'Before Relaxation', 'After Relaxation',
-                                                    'Before Happiness', 'After Happiness'])
+                                                    'Before Happiness', 'After Happiness'], dtype=float)
 
     print("Columns before assignment:")
     print(participant_scores_deq.columns)
@@ -134,8 +134,8 @@ file_path = os.path.join(folder_path, input_file)
 data = pd.read_csv(file_path)
 
 
-converted_data = convert_poms_columns(data)
-converted_data2 = convert_deq_columns(data)
+converted_data = convert_poms_columns(data.copy())
+converted_data2 = convert_deq_columns(data.copy())
 
 participant_scores = calculate_poms_scores(converted_data)
 participant_scores_deq = calculate_deq_scores(converted_data2)
