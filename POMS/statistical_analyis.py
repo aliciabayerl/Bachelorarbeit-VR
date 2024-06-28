@@ -9,13 +9,13 @@ file_path = os.path.join(folder_path, input_file)
 data = pd.read_csv(file_path)
 
 # Calculate the difference between before and after mood states for each participant
-for mood in ['Tension', 'Vigor', 'Confusion', 'Fatigue', 'Depression']:
+for mood in ['Tension', 'Vigor', 'Confusion', 'Fatigue', 'Anger_x', 'Depression']:
     data[f'Difference_{mood}'] = data[f'After {mood}'] - data[f'Before {mood}']
 
 # statistical paired t-test to find out p value to test statistical value: p value < 0.05 means stat. difference
 # is significant enough not to be random, only in tired condition 1 almost reached
     
-mood_states = ['Tension', 'Vigor', 'Confusion', 'Fatigue', 'Depression']
+mood_states = ['Tension', 'Vigor', 'Confusion', 'Fatigue', 'Anger_x', 'Depression']
 for mood in mood_states:
     print(f"Statistical Analysis for {mood}:")
     for condition in data['Condition'].unique():

@@ -55,6 +55,22 @@ plt.tight_layout()
 output_image = os.path.join('POMS/Plot_Images', 'DEQ_sickness_comparison_plot.png')
 plt.savefig(output_image)
 
+
 plt.show()
 
+# new csv POMS no motion sickness
+columns_to_select = ['Participant', 'Condition_x', 'Before Anger', 'After Anger', 'Before Disgust', 'After Disgust', 
+                     'Before Fear', 'After Fear', 'Before Anxiety', 'After Anxiety', 
+                     'Before Sadness', 'After Sadness', 'Before Desire', 'After Desire', 'Before Relaxation', 'After Relaxation', 'Before Happiness', 'After Happiness']
 
+participant_scores = no_motion_sickness[columns_to_select]
+participant_scores_ms = motion_sickness[columns_to_select]
+
+
+output_file = 'DEQ_MS_participant_scores.csv'
+output_path = os.path.join(folder_path, output_file)
+participant_scores.to_csv(output_path, index=False)
+
+output_file_ms = 'DEQ_MSyes_participant_scores.csv'
+output_path_ms = os.path.join(folder_path, output_file_ms)
+participant_scores_ms.to_csv(output_path_ms, index=False)
