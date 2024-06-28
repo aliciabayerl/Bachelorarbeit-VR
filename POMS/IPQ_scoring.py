@@ -79,8 +79,10 @@ def compute_ipq_means(data, ipq_items):
         else:
             data[f'{category}_mean'] = None
 
+    data['Participant'] = data.index + 1
+
 compute_ipq_means(data, ipq_items)
-selected_columns = ['Condition'] + [f'{category}_mean' for category in ipq_items.keys()]
+selected_columns = ['Condition','Participant'] + [f'{category}_mean' for category in ipq_items.keys()]
 ipq_scores_data = data[selected_columns]
 
 output_file = 'IPQ_scores.csv'
