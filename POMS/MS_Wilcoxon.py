@@ -45,5 +45,4 @@ for mood in mood_states:
     if len(before_scores) > 1 and len(after_scores) > 1:
         ci = bootstrap(after_scores - before_scores)
         print(f"95% Confidence Interval for {mood}: {ci}")
-    else:
-        print(f"Not enough data to perform bootstrap for {mood}.")
+
