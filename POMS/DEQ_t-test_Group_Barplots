@@ -1,0 +1,100 @@
+import pandas as pd
+from scipy.stats import ttest_ind
+import os
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Load the data
+folder_path = 'POMS'
+input_file = 'questionnaire_with_scores.csv'
+image_path = 'POMS/Plot_Images'
+file_path = os.path.join(folder_path, input_file)
+data = pd.read_csv(file_path)
+
+# Print column names to inspect
+print("Column names:", data.columns)
+
+# Display the first few rows of the DataFrame to understand its structure
+print(data.head())
+
+# Ensure the Condition mapping is correct
+data['Combined_Condition'] = data['Condition_x'].replace({
+    0: 'No Sound',
+    1: 'Auditory Stimuli',
+    2: 'Auditory Stimuli'
+})
+
+# Separate data into motion sickness groups
+motion_sickness = data[data['Did you experience any discomfort or adverse effects (physical or emotional, like nausea/dizziness due to motion sickness) during or after the virtual reality experience?'] == 'Yes']
+no_motion_sickness = data[data['Did you experience any discomfort or adverse effects (physical or emotional, like nausea/dizziness due to motion sickness) during or after the virtual reality experience?'] == 'No']
+
+# Further separate each group by auditory stimuli
+groups = {
+    'Motion Sickness - No Sound': motion_sickness[motion_sickness['Combined_Condition'] == 'No Sound'].copy(),
+    'Motion Sickness - Auditory Stimuli': motion_sickness[motion_sickness['Combined_Condition'] == 'Auditory Stimuli'].copy(),
+    'No Motion Sickness - No Sound': no_motion_sickness[no_motion_sickness['Combined_Condition'] == 'No Sound'].copy(),
+    'No Motion Sickness - Auditory Stimuli': no_motion_sickness[no_motion_sickness['Combined_Condition'] == 'Auditory Stimuli'].copy()
+}
+
+# Calculate the difference between before and after mood states for each participant
+mood_states = ['Anger', 'Disgust', 'Fear', 'Anxiety', 'Sadness', 'Desire', 'Relaxation', 'Happiness']
+for mood in mood_states:
+    for group in groups.values():
+        group.loc[:, f'Change_{mood}'] = group[f'After {mood}'] - group[f'Before {mood}']
+
+# Collect data for plotting
+plot_data = []
+for group_name, group_data in groups.items():
+    for mood_state in mood_states:
+        group_diff = group_data[f'Change_{mood_state}'].dropna()
+        if len(group_diff) > 0:
+            plot_data.append({
+                'Group': group_name,
+                'Mood State': mood_state,
+                'Mean Change': group_diff.mean(),
+                'Std Dev': group_diff.std(),
+                'Count': len(group_diff)
+            })
+
+# Convert to DataFrame for plotting
+plot_df = pd.DataFrame(plot_data)
+
+# Set up the plot
+sns.set(style="whitegrid")
+fig, ax = plt.subplots(figsize=(15, 8))
+
+# Create bar plot
+sns.barplot(
+    x='Mood State', 
+    y='Mean Change', 
+    hue='Group', 
+    data=plot_df, 
+    ci=None, 
+    palette='muted', 
+    capsize=.1
+)
+
+# Add error bars manually
+for i in range(len(plot_df)):
+    row = plot_df.iloc[i]
+    ax.errorbar(
+        x=i % len(mood_states), 
+        y=row['Mean Change'], 
+        yerr=row['Std Dev'], 
+        fmt='none', 
+        c='black', 
+        capsize=5
+    )
+
+# Customize the plot
+plt.title('Mean Change in Mood States by Group', fontsize=16)
+plt.xlabel('Mood State', fontsize=14)
+plt.ylabel('Mean Change', fontsize=14)
+plt.legend(title='Group', bbox_to_anchor=(1.05, 1), loc='upper left')
+plt.xticks(rotation=45)
+
+# Save and show the plot
+output_image = os.path.join(image_path, 'DEQ_statistical_analysis_motion_sickness_sound.png')
+plt.tight_layout()
+plt.savefig(output_image)
+plt.show()

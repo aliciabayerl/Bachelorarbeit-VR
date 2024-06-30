@@ -1,0 +1,88 @@
+import pandas as pd
+from scipy.stats import ttest_ind
+import os
+import matplotlib.pyplot as plt
+
+# Load the data
+folder_path = 'POMS'
+input_file = 'questionnaire_with_scores.csv'
+image_path = 'POMS/Plot_Images'
+file_path = os.path.join(folder_path, input_file)
+data = pd.read_csv(file_path)
+
+# Print column names to inspect
+print("Column names:", data.columns)
+
+# Display the first few rows of the DataFrame to understand its structure
+print(data.head())
+
+# Ensure the Condition mapping is correct
+data['Combined_Condition'] = data['Condition_x'].replace({
+    0: 'No Sound',
+    1: 'Auditory Stimuli',
+    2: 'Auditory Stimuli'
+})
+
+# Separate data into motion sickness groups
+motion_sickness = data[data['Did you experience any discomfort or adverse effects (physical or emotional, like nausea/dizziness due to motion sickness) during or after the virtual reality experience?'] == 'Yes']
+no_motion_sickness = data[data['Did you experience any discomfort or adverse effects (physical or emotional, like nausea/dizziness due to motion sickness) during or after the virtual reality experience?'] == 'No']
+
+# Further separate each group by auditory stimuli
+groups = {
+    'Motion Sickness - No Sound': motion_sickness[motion_sickness['Combined_Condition'] == 'No Sound'].copy(),
+    'Motion Sickness - Auditory Stimuli': motion_sickness[motion_sickness['Combined_Condition'] == 'Auditory Stimuli'].copy(),
+    'No Motion Sickness - No Sound': no_motion_sickness[no_motion_sickness['Combined_Condition'] == 'No Sound'].copy(),
+    'No Motion Sickness - Auditory Stimuli': no_motion_sickness[no_motion_sickness['Combined_Condition'] == 'Auditory Stimuli'].copy()
+}
+
+# Calculate the difference between before and after mood states for each participant
+mood_states = ['Anger', 'Disgust', 'Fear', 'Anxiety', 'Sadness', 'Desire', 'Relaxation', 'Happiness']
+for mood in mood_states:
+    for group in groups.values():
+        group.loc[:, f'Change_{mood}'] = group[f'After {mood}'] - group[f'Before {mood}']
+
+# Perform the t-tests for each group
+results = []
+
+for group_name, group_data in groups.items():
+    for mood_state in mood_states:
+        group_diff = group_data[f'Change_{mood_state}'].dropna()
+
+        if len(group_diff) > 0:
+            # Independent two-sample t-test
+            if 'No Sound' in group_name:
+                counterpart = group_name.replace('No Sound', 'Auditory Stimuli')
+            else:
+                counterpart = group_name.replace('Auditory Stimuli', 'No Sound')
+            
+            counterpart_data = groups[counterpart]
+            counterpart_diff = counterpart_data[f'Change_{mood_state}'].dropna()
+
+            if len(counterpart_diff) > 0:
+                t_stat, p_val = ttest_ind(group_diff, counterpart_diff)
+                results.append([group_name, mood_state, len(group_diff), group_diff.mean(), group_diff.std(), p_val])
+            else:
+                results.append([group_name, mood_state, len(group_diff), group_diff.mean(), group_diff.std(), None])
+        else:
+            results.append([group_name, mood_state, len(group_diff), None, None, None])
+
+# Create DataFrame for results
+results_df = pd.DataFrame(results, columns=['Group', 'Mood State', 'N', 'Mean', 'Std', 'p-value'])
+
+# Plot the results
+fig, ax = plt.subplots(figsize=(12, 10))
+ax.axis('tight')
+ax.axis('off')
+
+table = ax.table(cellText=results_df.values, colLabels=results_df.columns, cellLoc='center', loc='center')
+table.auto_set_font_size(False)
+table.set_fontsize(8)
+table.auto_set_column_width(col=list(range(len(results_df.columns))))
+
+plt.suptitle('Statistical Analysis Results for Motion Sickness and Auditory Stimuli Groups', fontsize=14, y=0.95)
+
+plt.tight_layout(rect=[0, 0.03, 1, 0.95])  # Adjust subplot layout
+
+output_image = os.path.join(image_path, 'DEQ_statistical_analysis_motion_sickness_sound.png')
+plt.savefig(output_image)
+plt.show()

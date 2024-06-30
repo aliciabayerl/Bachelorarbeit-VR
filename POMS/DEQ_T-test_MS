@@ -1,0 +1,73 @@
+import pandas as pd
+from scipy.stats import ttest_ind
+import os
+import matplotlib.pyplot as plt
+
+# Load the data
+folder_path = 'POMS'
+input_file = 'questionnaire_with_scores.csv'
+image_path = 'POMS/Plot_Images'
+file_path = os.path.join(folder_path, input_file)
+data = pd.read_csv(file_path)
+
+# Separate data into motion sickness and no motion sickness groups
+motion_sickness = data[data['Did you experience any discomfort or adverse effects (physical or emotional, like nausea/dizziness due to motion sickness) during or after the virtual reality experience?'] == 'Yes']
+no_motion_sickness = data[data['Did you experience any discomfort or adverse effects (physical or emotional, like nausea/dizziness due to motion sickness) during or after the virtual reality experience?'] == 'No']
+
+# Calculate the change scores for each mood state in both groups
+mood_states = ['Anger', 'Disgust', 'Fear', 'Anxiety', 'Sadness', 'Desire', 'Relaxation', 'Happiness']
+
+for mood_state in mood_states:
+    motion_sickness[f'Change_{mood_state}'] = motion_sickness[f'After {mood_state}'] - motion_sickness[f'Before {mood_state}']
+    no_motion_sickness[f'Change_{mood_state}'] = no_motion_sickness[f'After {mood_state}'] - no_motion_sickness[f'Before {mood_state}']
+
+change_scores = [f'Change_{mood_state}' for mood_state in mood_states]
+
+# Perform the t-tests for both groups
+results_motion_sickness = []
+results_no_motion_sickness = []
+
+for mood_state in mood_states:
+    no_motion_sickness_diff = no_motion_sickness[f'Change_{mood_state}'].dropna()
+    motion_sickness_diff = motion_sickness[f'Change_{mood_state}'].dropna()
+
+    if len(no_motion_sickness_diff) > 0 and len(motion_sickness_diff) > 0:
+        # Independent two-sample t-test
+        t_stat, p_val = ttest_ind(no_motion_sickness_diff, motion_sickness_diff)
+        
+        results_no_motion_sickness.append([mood_state, len(no_motion_sickness_diff), no_motion_sickness_diff.mean(), no_motion_sickness_diff.std(), p_val])
+        results_motion_sickness.append([mood_state, len(motion_sickness_diff), motion_sickness_diff.mean(), motion_sickness_diff.std(), p_val])
+    else:
+        results_no_motion_sickness.append([mood_state, len(no_motion_sickness_diff), None, None, None])
+        results_motion_sickness.append([mood_state, len(motion_sickness_diff), None, None, None])
+
+# Create DataFrames for the results
+results_no_motion_sickness_df = pd.DataFrame(results_no_motion_sickness, columns=['Mood State', 'N', 'Mean', 'Std', 'p-value'])
+results_motion_sickness_df = pd.DataFrame(results_motion_sickness, columns=['Mood State', 'N', 'Mean', 'Std', 'p-value'])
+
+# Plot the results
+fig, (ax1, ax2) = plt.subplots(nrows=2, ncols=1, figsize=(10, 12))  # Two subplots, one for each condition
+ax1.axis('tight')
+ax1.axis('off')
+ax2.axis('tight')
+ax2.axis('off')
+
+# Plot the tables for No Motion Sickness and Motion Sickness
+table1 = ax1.table(cellText=results_no_motion_sickness_df.values, colLabels=results_no_motion_sickness_df.columns, cellLoc='center', loc='center')
+table1.auto_set_font_size(False)
+table1.set_fontsize(8)
+table1.auto_set_column_width(col=list(range(len(results_no_motion_sickness_df.columns))))
+ax1.set_title('No Motion Sickness', fontsize=12)
+
+table2 = ax2.table(cellText=results_motion_sickness_df.values, colLabels=results_motion_sickness_df.columns, cellLoc='center', loc='center')
+table2.auto_set_font_size(False)
+table2.set_fontsize(8)
+table2.auto_set_column_width(col=list(range(len(results_motion_sickness_df.columns))))
+ax2.set_title('Motion Sickness', fontsize=12)
+
+plt.suptitle('Statistical Analysis Results', fontsize=14)
+plt.tight_layout(rect=[0, 0.03, 1, 0.95])  # Adjust subplot layout
+
+output_image = os.path.join(image_path, 'DEQ_statistical_analysis_motion_sickness.png')
+plt.savefig(output_image)
+plt.show()
