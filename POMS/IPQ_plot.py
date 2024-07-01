@@ -22,8 +22,9 @@ plt.xlabel('Condition')
 plt.ylabel('Mean Score')
 plt.legend(title='Presence Type')
 plt.grid(True)
-plt.show()
 
 image_path = 'POMS/Plot_Images'
 output_image = os.path.join(image_path, 'IPQ_PresencePlot')
+plt.tight_layout()
 plt.savefig(output_image)
+plt.show()
