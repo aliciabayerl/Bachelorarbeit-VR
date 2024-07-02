@@ -21,8 +21,6 @@ for mood_state in mood_states:
     motion_sickness[f'Change_{mood_state}'] = motion_sickness[f'After {mood_state}'] - motion_sickness[f'Before {mood_state}']
     no_motion_sickness[f'Change_{mood_state}'] = no_motion_sickness[f'After {mood_state}'] - no_motion_sickness[f'Before {mood_state}']
 
-change_scores = [f'Change_{mood_state}' for mood_state in mood_states]
-
 # Perform the t-tests for both groups
 results_motion_sickness = []
 results_no_motion_sickness = []

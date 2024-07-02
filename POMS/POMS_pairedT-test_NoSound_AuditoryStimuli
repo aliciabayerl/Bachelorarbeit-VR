@@ -3,6 +3,11 @@ from scipy.stats import ttest_rel
 import os
 import matplotlib.pyplot as plt
 import seaborn as sns
+import numpy as np
+
+# Function to calculate Cohen's d for paired samples
+def cohen_d_paired(x):
+    return np.mean(x) / np.std(x, ddof=1)
 
 # Define file paths
 folder_path = 'POMS'
@@ -65,6 +70,9 @@ def analyze_and_plot_combined(groups, group_name):
             mean_diff = condition_diff.mean()
             std_diff = condition_diff.std()
 
+            # Calculate Cohen's d
+            cohen_d = cohen_d_paired(condition_diff)
+
             # Store results for plotting
             results.append({
                 'Mood': mood,
@@ -72,10 +80,11 @@ def analyze_and_plot_combined(groups, group_name):
                 'Mean Difference': mean_diff,
                 'Standard Deviation': std_diff,
                 'p-value': p_val,
+                'Cohen\'s d': cohen_d,
                 'Group': group_name
             })
 
-            print(f"Condition {condition}: Mean Difference = {mean_diff:.2f}, Standard Deviation = {std_diff:.2f}, p-value = {p_val:.4f}, Participants = {condition_diff.shape[0]}")
+            print(f"Condition {condition}: Mean Difference = {mean_diff:.2f}, Standard Deviation = {std_diff:.2f}, p-value = {p_val:.4f}, Cohen's d = {cohen_d:.4f}, Participants = {condition_diff.shape[0]}")
         print()
 
     # Convert results to DataFrame for plotting

@@ -2,6 +2,7 @@ import pandas as pd
 from scipy.stats import ttest_ind
 import os
 import matplotlib.pyplot as plt
+import numpy as np
 
 # Load the data
 folder_path = 'POMS'
@@ -41,6 +42,14 @@ for mood in mood_states:
     for group in groups.values():
         group.loc[:, f'Change_{mood}'] = group[f'After {mood}'] - group[f'Before {mood}']
 
+# Function to calculate Cohen's d for independent samples
+def cohen_d_independent(x, y):
+    nx = len(x)
+    ny = len(y)
+    dof = nx + ny - 2
+    pooled_std = np.sqrt(((nx - 1) * np.std(x, ddof=1) ** 2 + (ny - 1) * np.std(y, ddof=1) ** 2) / dof)
+    return (np.mean(x) - np.mean(y)) / pooled_std
+
 # Perform the t-tests for each group
 results = []
 
@@ -60,14 +69,15 @@ for group_name, group_data in groups.items():
 
             if len(counterpart_diff) > 0:
                 t_stat, p_val = ttest_ind(group_diff, counterpart_diff)
-                results.append([group_name, mood_state, len(group_diff), group_diff.mean(), group_diff.std(), p_val])
+                cohen_d = cohen_d_independent(group_diff, counterpart_diff)
+                results.append([group_name, mood_state, len(group_diff), group_diff.mean(), group_diff.std(), p_val, cohen_d])
             else:
                 results.append([group_name, mood_state, len(group_diff), group_diff.mean(), group_diff.std(), None])
         else:
             results.append([group_name, mood_state, len(group_diff), None, None, None])
 
 # Create DataFrame for results
-results_df = pd.DataFrame(results, columns=['Group', 'Mood State', 'N', 'Mean', 'Std', 'p-value'])
+results_df = pd.DataFrame(results, columns=['Group', 'Mood State', 'N', 'Mean', 'Std', 'p-value', 'Cohen\'s d'])
 
 # Plot the results
 fig, ax = plt.subplots(figsize=(12, 10))

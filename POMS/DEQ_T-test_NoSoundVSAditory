@@ -2,6 +2,7 @@ import pandas as pd
 from scipy.stats import ttest_ind
 import os
 import matplotlib.pyplot as plt
+import numpy as np
 
 # Load the data
 folder_path = 'POMS'
@@ -24,6 +25,14 @@ data['Combined_Condition'] = data['Condition'].replace({
     2: 'Auditory Stimuli'
 })
 
+# Function to calculate Cohen's d for independent samples
+def cohen_d_independent(x, y):
+    nx = len(x)
+    ny = len(y)
+    dof = nx + ny - 2
+    pooled_std = np.sqrt(((nx - 1) * np.std(x, ddof=1) ** 2 + (ny - 1) * np.std(y, ddof=1) ** 2) / dof)
+    return (np.mean(x) - np.mean(y)) / pooled_std
+
 # Independent two-sample t-tests between no sound and auditory stimuli groups for each mood state
 mood_states = ['Anger', 'Disgust', 'Fear', 'Anxiety', 'Sadness', 'Desire', 'Relaxation', 'Happiness']
 for mood in mood_states:
@@ -38,19 +47,18 @@ for mood in mood_states:
     if len(no_sound_diff) > 0 and len(auditory_stimuli_diff) > 0:
         # Independent two-sample t-test
         t_stat, p_val = ttest_ind(no_sound_diff, auditory_stimuli_diff)
-        print(f"No Sound vs. Auditory Stimuli: p-value = {p_val:.4f}")
+        cohen_d = cohen_d_independent(no_sound_diff, auditory_stimuli_diff)
+        print(f"No Sound vs. Auditory Stimuli: p-value = {p_val:.4f}, Cohen's d = {cohen_d:.4f}")
     else:
         print("Insufficient data for t-test.")
 
     print()
 
-#plot everything
 # Prepare lists to collect results for No Sound and Auditory Stimuli
 results_no_sound = []
 results_auditory_stimuli = []
 
 # Independent two-sample t-tests between no sound and auditory stimuli groups for each mood state
-mood_states = ['Anger', 'Disgust', 'Fear', 'Anxiety', 'Sadness', 'Desire', 'Relaxation', 'Happiness']
 for mood in mood_states:
     no_sound_diff = data[data['Combined_Condition'] == 'No Sound'][f'Difference_{mood}'].dropna()
     auditory_stimuli_diff = data[data['Combined_Condition'] == 'Auditory Stimuli'][f'Difference_{mood}'].dropna()
@@ -58,16 +66,17 @@ for mood in mood_states:
     if len(no_sound_diff) > 0 and len(auditory_stimuli_diff) > 0:
         # Independent two-sample t-test
         t_stat, p_val = ttest_ind(no_sound_diff, auditory_stimuli_diff)
+        cohen_d = cohen_d_independent(no_sound_diff, auditory_stimuli_diff)
         
-        results_no_sound.append([mood, len(no_sound_diff), no_sound_diff.mean(), no_sound_diff.std(), p_val])
-        results_auditory_stimuli.append([mood, len(auditory_stimuli_diff), auditory_stimuli_diff.mean(), auditory_stimuli_diff.std(), p_val])
+        results_no_sound.append([mood, len(no_sound_diff), no_sound_diff.mean(), no_sound_diff.std(), p_val, cohen_d])
+        results_auditory_stimuli.append([mood, len(auditory_stimuli_diff), auditory_stimuli_diff.mean(), auditory_stimuli_diff.std(), p_val, cohen_d])
     else:
-        results_no_sound.append([mood, len(no_sound_diff), None, None, None])
-        results_auditory_stimuli.append([mood, len(auditory_stimuli_diff), None, None, None])
+        results_no_sound.append([mood, len(no_sound_diff), None, None, None, None])
+        results_auditory_stimuli.append([mood, len(auditory_stimuli_diff), None, None, None, None])
 
 # Create DataFrames for No Sound and Auditory Stimuli results
-results_no_sound_df = pd.DataFrame(results_no_sound, columns=['Mood State', 'N', 'Mean', 'Std', 'p-value'])
-results_auditory_stimuli_df = pd.DataFrame(results_auditory_stimuli, columns=['Mood State', 'N', 'Mean', 'Std', 'p-value'])
+results_no_sound_df = pd.DataFrame(results_no_sound, columns=['Mood State', 'N', 'Mean', 'Std', 'p-value', 'Cohen\'s d'])
+results_auditory_stimuli_df = pd.DataFrame(results_auditory_stimuli, columns=['Mood State', 'N', 'Mean', 'Std', 'p-value', 'Cohen\'s d'])
 
 # Plot the compact table layout
 fig, (ax1, ax2) = plt.subplots(nrows=2, ncols=1, figsize=(10, 8))  # Two subplots, one for each condition
