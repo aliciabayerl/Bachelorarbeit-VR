@@ -1,6 +1,6 @@
-Change_Tension: Statistics=98.0, p=1.0
-Change_Vigor: Statistics=108.5, p=0.6426891712062756
-Change_Confusion: Statistics=81.5, p=0.45890199580774504
-Change_Fatigue: Statistics=82.0, p=0.473672725978485
-Change_Anger: Statistics=85.0, p=0.5495052706209598
-Change_Depression: Statistics=93.5, p=0.8517507551313013
+Change_Tension: Statistics=98.0, p=1.0, Effect Size (r)=0.0
+Change_Vigor: Statistics=108.5, p=0.6426891712062756, Effect Size (r)=0.09117460107822462
+Change_Confusion: Statistics=81.5, p=0.45890199580774516, Effect Size (r)=-0.1432743731229244
+Change_Fatigue: Statistics=82.0, p=0.473672725978485, Effect Size (r)=-0.13893272545253277
+Change_Anger: Statistics=85.0, p=0.5495052706209598, Effect Size (r)=-0.11288283943018285
+Change_Depression: Statistics=93.5, p=0.8517507551313013, Effect Size (r)=-0.039074829033524834
