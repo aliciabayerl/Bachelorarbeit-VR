@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 
 folder_path = 'POMS'
 ipq_scores_file = os.path.join(folder_path, 'ipq_scores.csv')
-no_ms_file = os.path.join(folder_path, 'POMS_MS_participant_scores.csv')
-ms_file = os.path.join(folder_path, 'POMS_MSyes_participant_scores.csv')
+no_ms_file = os.path.join(folder_path, 'DEQ_MS_participant_scores.csv')
+ms_file = os.path.join(folder_path, 'DEQ_MSyes_participant_scores.csv')
 
 ipq_scores = pd.read_csv(ipq_scores_file)
 no_ms_data = pd.read_csv(no_ms_file)
@@ -23,9 +23,6 @@ ipq_scores = ipq_scores[ipq_scores['Group'] != 'Unknown']
 
 condition_means = ipq_scores.groupby(['Group', 'Condition'])[['SP_mean', 'INV_mean', 'REAL_mean', 'Overall_Presence']].mean().reset_index()
 
-print(condition_means.shape)
-
-print(condition_means.head())
 
 melted_data = condition_means.melt(id_vars=['Group', 'Condition'], var_name='Presence_Type', value_name='Mean_Score')
 
