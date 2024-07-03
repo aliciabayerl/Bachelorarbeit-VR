@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 from scipy.stats import kruskal
-from scikit_posthocs import posthoc_dunn
+import scikit_posthocs as sp
 import numpy as np
 from numpy import mean, sqrt
 
@@ -52,11 +52,17 @@ alpha = 0.05
 print("Kruskal-Wallis Test Results with Bootstrap and Effect Size:")
 for score in change_scores:
     stat, p_value = kruskal(groups['0'][score], groups['1_and_2'][score])
-    print(f'{score}: Statistics={stat}, p-value={p_value}')
+    
+    # Epsilon Squared calculation
+    n = len(data)
+    k = len(groups)
+    epsilon_squared = (stat - k + 1) / (n - k)
+    
+    print(f'{score}: Statistics={stat}, p-value={p_value}, Epsilon Squared={epsilon_squared:.4f}')
     
     if p_value < 0.05:
         print(f'There is a significant difference in {score} across the groups')
-        dunn_results = posthoc_dunn(data, val_col=score, group_col='Condition_Grouped')
+        dunn_results = sp.posthoc_dunn(data, val_col=score, group_col='Condition_Grouped')
         print(dunn_results)
     else:
         print(f'There is no significant difference in {score} across the groups')
@@ -70,5 +76,5 @@ for score in change_scores:
     
     print(f'95% Confidence Interval for {score} in Condition 0: {ci_0}')
     print(f'95% Confidence Interval for {score} in Condition 1_and_2: {ci_1_and_2}')
-    print(f'Effect Size (Cohen\'s d) for {score}: {effect_size}')
+    print(f'Effect Size (Cohen\'s d) for {score}: {effect_size:.4f}')
     print()
