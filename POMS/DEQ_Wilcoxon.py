@@ -21,6 +21,8 @@ for condition in data['Condition'].unique():
         after_col = f'After {mood}'
         
         stat, p_value = wilcoxon(condition_data[before_col], condition_data[after_col])
+
+
         
         print(f'Condition {condition}, Change_{mood}: Statistics={stat:.3f}, p={p_value:.3f}')
         

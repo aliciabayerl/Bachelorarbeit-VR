@@ -30,17 +30,15 @@ for mood in mood_states:
     before_scores = data[before_col]
     after_scores = data[after_col]
     
-    # Perform Wilcoxon signed-rank test
     stat, p_value = wilcoxon(before_scores, after_scores, zero_method='wilcox', correction=False, mode='exact')
-    
-    print(f'Change_{mood}: Statistics={stat:.3f}, p={p_value:.3f}')
-    
-    # Determine significance based on alpha level
-    if p_value < alpha:
-        print(f'Reject the null hypothesis: There is a significant change in {mood}.')
-    else:
-        print(f'Fail to reject the null hypothesis: There is no significant change in {mood}.')
 
+    # Calculate the effect size using Method 2
+    n = len(before_scores)
+    effect_size = (2 * stat / (n * (n + 1))) - 1
+    
+    # Print the Wilcoxon test result and effect size
+    print(f'{mood}: Statistics={stat}, p-value={p_value:.3f}, Effect Size={effect_size:.3f}')
+    
     # Apply bootstrapping only if there are enough samples
     if len(before_scores) > 1 and len(after_scores) > 1:
         ci = bootstrap(after_scores - before_scores)

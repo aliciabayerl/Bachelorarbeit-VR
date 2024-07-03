@@ -34,7 +34,6 @@ for condition_id in range(3):  # Assuming there are 3 conditions
         after_col = f'After {mood}'
 
         
-        
         # Extract actual columns from DataFrame
         before_scores = condition_data[before_col]
         after_scores = condition_data[after_col]
@@ -49,12 +48,12 @@ for condition_id in range(3):  # Assuming there are 3 conditions
         # Perform Wilcoxon signed-rank test
         stat, p_value = wilcoxon(before_scores, after_scores, zero_method='wilcox', correction=False, mode='exact')
         
-        print(f'Change_{mood}: Statistics={stat:.3f}, p={p_value:.3f}')
-        
-        # Determine significance based on alpha level
-        if p_value < alpha:
-            print(f'Reject the null hypothesis: There is a significant change in {mood}.')
-        else:
-            print(f'Fail to reject the null hypothesis: There is no significant change in {mood}.')
-        
+        # Calculate the effect size using Method 2
+        n = len(before_scores)
+        effect_size = (2 * stat / (n * (n + 1))) - 1
+    
+        # Print the Wilcoxon test result and effect size
+        print(f'{mood}: Statistics={stat}, p-value={p_value:.3f}, Effect Size={effect_size:.3f}')
+            
+
 
