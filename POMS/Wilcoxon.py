@@ -1,6 +1,7 @@
 import pandas as pd
 from scipy.stats import wilcoxon
 import os
+import numpy as np
 
 # Load your data
 folder_path = 'POMS'
@@ -13,9 +14,13 @@ alpha = 0.05
 # List of mood states to analyze
 mood_states = ['Tension', 'Vigor', 'Confusion', 'Fatigue', 'Anger_x', 'Depression']
 
-# Function to calculate rank-biserial correlation as effect size
-def rank_biserial_effect_size(w_stat, n):
-    return (2 * w_stat / (n * (n + 1))) - 1
+# Function to calculate effect size for Wilcoxon signed-rank test
+def calculate_effect_size(stat, n):
+    # Calculate Z from the Wilcoxon statistic
+    z = (stat - n * (n + 1) / 4) / np.sqrt(n * (n + 1) * (2 * n + 1) / 24)
+    # Calculate effect size r
+    r = z / np.sqrt(n)
+    return abs(r)
 
 # Iterate over each condition and mood state
 for condition in data['Condition'].unique():
@@ -25,15 +30,13 @@ for condition in data['Condition'].unique():
         before_col = f'Before {mood}'
         after_col = f'After {mood}'
         
+        # Perform the Wilcoxon signed-rank test
         stat, p_value = wilcoxon(condition_data[before_col], condition_data[after_col])
         
         # Calculate effect size
         n = len(condition_data)
-        effect_size = rank_biserial_effect_size(stat, n)
-        
+        effect_size = calculate_effect_size(stat, n)
+                
         print(f'Condition {condition}, Change_{mood}: Statistics={stat:.3f}, p={p_value:.3f}, Effect Size={effect_size:.3f}')
         
-        if p_value < alpha:
-            print(f'Reject the null hypothesis: There is a significant change in {mood}.')
-        else:
-            print(f'Fail to reject the null hypothesis: There is no significant change in {mood}.')
+

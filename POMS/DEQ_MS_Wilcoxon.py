@@ -15,6 +15,11 @@ def bootstrap(data, num_samples=1000):
     bootstrap_means = np.mean(bootstrap_samples, axis=1)
     return np.percentile(bootstrap_means, [2.5, 97.5])
 
+def calculate_effect_size(stat, n):
+    z = (stat - n * (n + 1) / 4) / np.sqrt(n * (n + 1) * (2 * n + 1) / 24)
+    r = z / np.sqrt(n)
+    return abs(r)
+
 alpha = 0.05
 
 # List of mood states to analyze
@@ -34,26 +39,28 @@ for condition_id in range(3):
         before_scores = condition_data[before_col]
         after_scores = condition_data[after_col]
         
+        # Compute differences between after and before scores
+        differences = after_scores - before_scores
+        
         # Apply bootstrapping only if there are enough samples
         if len(before_scores) > 1 and len(after_scores) > 1:
-            differences = after_scores - before_scores
             ci = bootstrap(differences)
             print(f"95% Confidence Interval for {mood}: {ci}")
         else:
             print(f"Not enough data to perform bootstrap for {mood}.")
-        
-        differences = after_scores - before_scores
         
         if np.all(differences == 0):
             print(f"No changes detected in {mood}, skipping Wilcoxon test.")
         else:
             # Perform Wilcoxon signed-rank test
             stat, p_value = wilcoxon(before_scores, after_scores, zero_method='wilcox', correction=False, mode='approx')
-        
-            print(f'Change_{mood}: Statistics={stat:.3f}, p={p_value:.3f}')
             
-            # Determine significance based on alpha level
-            if p_value < alpha:
-                print(f'Reject the null hypothesis: There is a significant change in {mood}.')
-            else:
-                print(f'Fail to reject the null hypothesis: There is no significant change in {mood}.')
+            # Calculate the effect size
+            n = len(before_scores)
+            effect_size = calculate_effect_size(stat, n)
+        
+            # Print the Wilcoxon test result, effect size, and confidence interval
+            print(f'Change_{mood}: Statistics={stat:.3f}, p={p_value:.3f}, Effect Size={effect_size:.3f}')
+            
+        
+
