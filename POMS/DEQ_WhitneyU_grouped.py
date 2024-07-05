@@ -31,6 +31,10 @@ groups = {
     '1_and_2': data[data['Condition_Grouped'] == '1_and_2']
 }
 
+# Function to calculate rank-biserial correlation
+def rank_biserial_correlation(U, n1, n2):
+    return 1 - (2 * U) / (n1 * n2)
+
 print("Mann-Whitney U Test Results:")
 for score in change_scores:
     group_0_scores = groups['0'][score]
@@ -38,7 +42,11 @@ for score in change_scores:
     
     # Mann-Whitney U test
     stat, p_value = mannwhitneyu(group_0_scores, group_1_and_2_scores, alternative='two-sided')
-    print(f'{score}: Statistics={stat}, p-value={p_value}')
+    n1 = len(group_0_scores)
+    n2 = len(group_1_and_2_scores)
+    effect_size = rank_biserial_correlation(stat, n1, n2)
+    
+    print(f'{score}: Statistics={stat}, p-value={p_value}, Effect Size={effect_size:.3f}')
     if p_value < 0.05:
         print(f'There is a significant difference in {score} across the groups')
     else:
