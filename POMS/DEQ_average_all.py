@@ -18,12 +18,11 @@ mean_scores = participant_scores.mean().reset_index()
 melted_scores = mean_scores.melt(id_vars=['index'], var_name='Time', value_name='Mean Score')
 
 plt.figure(figsize=(12, 8))
-sns.barplot(x='index', y='Mean Score', hue='Time', data=melted_scores)
+sns.barplot(x='index', y='Mean Score', data=melted_scores)
 plt.title('Average Mood States Before and After')
 plt.xlabel('Mood State')
 plt.ylabel('Mean Score')
 plt.xticks(rotation=45)
-plt.legend(title='Time', bbox_to_anchor=(1.05, 1), loc='upper left')
 plt.tight_layout()
 
 output_image = os.path.join(image_path, 'DEQ_all_conditions_plot.png')
