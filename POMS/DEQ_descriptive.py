@@ -26,7 +26,6 @@ for mood in mood_states:
         'Before Q1': data[before_col].quantile(0.25),
         'Before Q3': data[before_col].quantile(0.75),
         'Before IQR': data[before_col].quantile(0.75) - data[before_col].quantile(0.25),
-
         'After Mean': data[after_col].mean(),
         'After Median': data[after_col].median(),
         'After Std Dev': data[after_col].std(),
@@ -43,10 +42,8 @@ stats_df = pd.DataFrame(descriptive_stats).T
 # Save the descriptive statistics to a CSV file
 stats_df.to_csv('descriptive_statistics_deq.csv')
 
-# Calculate summary statistics by condition
+# Calculate summary statistics by condition and save to a CSV file
 summary_by_condition = data.groupby('Condition').describe().T
-
-# Save summary statistics by condition to a CSV file
 summary_by_condition.to_csv('summary_statistics_by_condition.csv')
 
 # Print the descriptive statistics and summary statistics by condition
