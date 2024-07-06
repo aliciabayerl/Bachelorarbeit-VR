@@ -2,9 +2,7 @@ import pandas as pd
 import os
 
 # Load the data from the CSV file
-
 folder_path = 'POMS'
-
 participant_scores_file = os.path.join(folder_path, 'participant_scores_deq.csv')
 data = pd.read_csv(participant_scores_file)
 
@@ -42,12 +40,17 @@ for mood in mood_states:
 # Convert the descriptive statistics dictionary to a DataFrame
 stats_df = pd.DataFrame(descriptive_stats).T
 
-# Print the descriptive statistics
-print(stats_df)
-
+# Save the descriptive statistics to a CSV file
 stats_df.to_csv('descriptive_statistics_deq.csv')
 
+# Calculate summary statistics by condition
+summary_by_condition = data.groupby('Condition').describe().T
 
-# Display summary statistics for each condition
+# Save summary statistics by condition to a CSV file
+summary_by_condition.to_csv('summary_statistics_by_condition.csv')
+
+# Print the descriptive statistics and summary statistics by condition
+print("Descriptive Statistics:")
+print(stats_df)
 print("\nSummary Statistics by Condition:")
-print(data.groupby('Condition').describe().T)
+print(summary_by_condition)
