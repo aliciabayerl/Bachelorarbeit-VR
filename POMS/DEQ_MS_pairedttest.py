@@ -26,13 +26,11 @@ for mood in mood_states:
     motion_sickness[f'Change_{mood}'] = motion_sickness[f'After {mood}'] - motion_sickness[f'Before {mood}']
     no_motion_sickness[f'Change_{mood}'] = no_motion_sickness[f'After {mood}'] - no_motion_sickness[f'Before {mood}']
 
-def cohen_d(data1, data2):
+def cohen_d(x, y):
     """Compute Cohen's d for paired samples."""
-    diff = data1 - data2
-    n = len(data1)
-    mean_diff = np.mean(diff)
-    sd_diff = np.std(diff, ddof=1)  # Sample standard deviation
-    return mean_diff / sd_diff
+    n = len(x)
+    diff = x - y
+    return np.mean(diff) / np.std(diff, ddof=1)
 
 def analyze_and_plot(group_data, group_name):
     results = []
@@ -41,7 +39,7 @@ def analyze_and_plot(group_data, group_name):
         t_stat, p_val = ttest_rel(mood_change, [0] * len(mood_change))
         mean_diff = mood_change.mean()
         std_diff = mood_change.std()
-        effect_size = cohen_d(mood_change, [0] * len(mood_change))
+        effect_size = cohen_d(mood_change, np.zeros(len(mood_change)))  # Calculate Cohen's d
 
         results.append({
             'Mood': mood,
@@ -51,8 +49,8 @@ def analyze_and_plot(group_data, group_name):
             'Cohen\'s d': effect_size,
             'Group': group_name
         })
-
-        print(f"{group_name} {mood}: Mean Difference = {mean_diff:.2f}, Standard Deviation = {std_diff:.2f}, p-value = {p_val:.4f}, Cohen's d = {effect_size:.2f}")
+        
+        print(f"{group_name} - {mood}: Mean Difference = {mean_diff:.2f}, Std Dev = {std_diff:.2f}, p-value = {p_val:.4f}, Cohen's d = {effect_size:.2f}")
 
     results_df = pd.DataFrame(results)
     plt.figure(figsize=(12, 8))

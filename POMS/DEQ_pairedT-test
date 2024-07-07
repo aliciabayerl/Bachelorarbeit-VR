@@ -3,8 +3,7 @@ from scipy.stats import ttest_rel
 import os
 import matplotlib.pyplot as plt
 import seaborn as sns
-
-
+import numpy as np
 
 # Define file paths
 folder_path = 'POMS'
@@ -14,9 +13,6 @@ file_path = os.path.join(folder_path, input_file)
 # Load the data
 data = pd.read_csv(file_path)
 
-# Verify column names to ensure the required column is present
-print(data.columns)
-
 # Define the column name for motion sickness
 motion_sickness_col = 'Did you experience any discomfort or adverse effects (physical or emotional, like nausea/dizziness due to motion sickness) during or after the virtual reality experience?'
 
@@ -24,17 +20,15 @@ motion_sickness_col = 'Did you experience any discomfort or adverse effects (phy
 motion_sickness = data[data[motion_sickness_col] == 'Yes'].copy()
 no_motion_sickness = data[data[motion_sickness_col] == 'No'].copy()
 
-# Print the number of participants in each group
-print(f"Number of participants with motion sickness: {motion_sickness.shape[0]}")
-print(f"Number of participants with no motion sickness: {no_motion_sickness.shape[0]}")
-print(f"Total number of participants: {data.shape[0]}")
-
 # Calculate the change scores for each mood state in both groups
 mood_states = ['Anger', 'Disgust', 'Fear', 'Anxiety', 'Sadness', 'Desire', 'Relaxation', 'Happiness']
+for mood in mood_states:
+    motion_sickness[f'Change_{mood}'] = motion_sickness[f'After {mood}'] - motion_sickness[f'Before {mood}']
+    no_motion_sickness[f'Change_{mood}'] = no_motion_sickness[f'After {mood}'] - no_motion_sickness[f'Before {mood}']
 
-for mood_state in mood_states:
-    motion_sickness.loc[:, f'Change_{mood_state}'] = motion_sickness[f'After {mood_state}'] - motion_sickness[f'Before {mood_state}']
-    no_motion_sickness.loc[:, f'Change_{mood_state}'] = no_motion_sickness[f'After {mood_state}'] - no_motion_sickness[f'Before {mood_state}']
+def cohen_d(x):
+    """Compute Cohen's d for paired samples."""
+    return np.mean(x) / np.std(x, ddof=1)
 
 # Function to analyze and plot the data
 def analyze_and_plot(group_data, group_name):
@@ -44,14 +38,13 @@ def analyze_and_plot(group_data, group_name):
         print(f"Statistical Analysis for {mood} ({group_name}):")
         for condition in group_data['Condition_x'].unique():
             condition_data = group_data[group_data['Condition_x'] == condition]
-            condition_diff = condition_data[f'Change_{mood}']  # Use Change_ instead of Difference_
+            condition_diff = condition_data[f'Change_{mood}']
 
             # Paired t-test
             t_stat, p_val = ttest_rel(condition_diff, [0] * len(condition_diff))
-
-            # Calculate mean and standard deviation
             mean_diff = condition_diff.mean()
             std_diff = condition_diff.std()
+            effect_size = cohen_d(condition_diff)
 
             # Store results for plotting
             results.append({
@@ -60,12 +53,11 @@ def analyze_and_plot(group_data, group_name):
                 'Mean Difference': mean_diff,
                 'Standard Deviation': std_diff,
                 'p-value': p_val,
+                'Cohen\'s d': effect_size,
                 'Group': group_name
             })
 
-            print(f"Condition {condition}: Mean Difference = {mean_diff:.2f}, Standard Deviation = {std_diff:.2f}, p-value = {p_val:.4f}, Participants = {condition_diff.shape[0]}")
-        print()
-
+            print(f"Condition {condition}: Mean Difference = {mean_diff:.2f}, Standard Deviation = {std_diff:.2f}, p-value = {p_val:.4f}, Cohen's d = {effect_size:.2f}")
 
     # Convert results to DataFrame for plotting
     results_df = pd.DataFrame(results)
@@ -73,48 +65,17 @@ def analyze_and_plot(group_data, group_name):
     # Set up the plot
     sns.set(style="whitegrid")
     fig, ax = plt.subplots(figsize=(15, 8))
-
-    # Create bar plot
-    sns.barplot(
-        x='Mood', 
-        y='Mean Difference', 
-        hue='Condition', 
-        data=results_df, 
-        ci=None, 
-        palette='muted', 
-        capsize=.1
-    )
-
-    # Add error bars manually
-    for i in range(len(results_df)):
-        row = results_df.iloc[i]
-        ax.errorbar(
-            x=i % len(mood_states), 
-            y=row['Mean Difference'], 
-            yerr=row['Standard Deviation'], 
-            fmt='none', 
-            c='black', 
-            capsize=5
-        )
-
-
-    # Customize the plot
+    sns.barplot(x='Mood', y='Mean Difference', hue='Condition', data=results_df, ci=None, palette='muted', capsize=.1)
     plt.title(f'Mean Change in Mood States by Condition ({group_name})', fontsize=16)
     plt.xlabel('Mood State', fontsize=14)
     plt.ylabel('Mean Change', fontsize=14)
     plt.legend(title='Condition', bbox_to_anchor=(1.05, 1), loc='upper left')
     plt.xticks(rotation=45)
-
-    # Save and show the plot
-    output_image = os.path.join(folder_path, 'Plot_Images', f'DEQ_statistical_analysis_conditions_{group_name}.png')
     plt.tight_layout()
-    plt.savefig(output_image)
     plt.show()
-
 
 # Analyze and plot for no motion sickness group
 analyze_and_plot(no_motion_sickness, "No Motion Sickness")
 
 # Analyze and plot for motion sickness group
 analyze_and_plot(motion_sickness, "Motion Sickness")
-
