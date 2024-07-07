@@ -51,12 +51,18 @@ for score in change_scores:
 plt.figure(figsize=(14, 10))
 for i, score in enumerate(change_scores, 1):
     plt.subplot(2, 4, i)
+    mood = score.split('_')[1]  
     sns.histplot(data[score], kde=True)
-    plt.title(f'Distribution of {score}')
+    plt.title(mood)  
     plt.xlabel('Change Score')
     plt.ylabel('Frequency')
 
 plt.tight_layout()
+
+image_path = 'POMS/Plot_images'
+output_image = os.path.join(image_path, 'DEQ_distribution.png')
+plt.savefig(output_image)
+
 plt.show()
 
 
