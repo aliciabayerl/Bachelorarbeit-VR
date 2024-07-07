@@ -5,7 +5,7 @@ import numpy as np
 
 # Load your data
 folder_path = 'POMS'
-input_file = 'DEQ_MS_participant_scores.csv'
+input_file = 'DEQ_MSyes_participant_scores.csv'
 file_path = os.path.join(folder_path, input_file)
 data = pd.read_csv(file_path)
 
@@ -45,9 +45,7 @@ for condition_id in range(3):
         # Apply bootstrapping only if there are enough samples
         if len(before_scores) > 1 and len(after_scores) > 1:
             ci = bootstrap(differences)
-            print(f"95% Confidence Interval for {mood}: {ci}")
-        else:
-            print(f"Not enough data to perform bootstrap for {mood}.")
+
         
         if np.all(differences == 0):
             print(f"No changes detected in {mood}, skipping Wilcoxon test.")

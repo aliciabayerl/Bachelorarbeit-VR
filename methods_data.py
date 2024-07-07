@@ -1,43 +1,45 @@
 import pandas as pd
 import os
-import matplotlib.pyplot as plt
-import numpy as np
-
-
 
 folder_path = 'POMS'
 input_file = 'questionnaire2.csv'
 file_path = os.path.join(folder_path, input_file)
 data = pd.read_csv(file_path)
 
-df = pd.DataFrame(data)
-
-# Gender
+# Gender distribution
 gender_counts = data['Gender'].value_counts()
+gender_percentages = data['Gender'].value_counts(normalize=True) * 100
 
-# Filter participants in the age range
-age_range_18_24 = data[data['Age Range'] == '18-24']
-age_range_25_34 = data[data['Age Range'] == '25-34']
+# Age distribution
+age_counts = data['Age Range'].value_counts()
+age_percentages = data['Age Range'].value_counts(normalize=True) * 100
 
-num_participants_18_24 = len(age_range_18_24)
-num_participants_25_34 = len(age_range_25_34)
-
-# Occupation
-employed = data[data['Occupation'] == 'Employed']
-num_employed = len(employed)
+# Employment status
+employment_counts = data['Occupation'].value_counts()
+employment_percentages = data['Occupation'].value_counts(normalize=True) * 100
 
 # Previous VR Experience
-percentage_experience = df['Please indicate your previous experience with virtual reality:'].value_counts(normalize=True) * 100
+vr_experience_counts = data['Please indicate your previous experience with virtual reality:'].value_counts()
+vr_experience_percentages = data['Please indicate your previous experience with virtual reality:'].value_counts(normalize=True) * 100
 
-print("Percentage of Previous Experience with Virtual Reality:")
-print(percentage_experience)
+# Walking in nature relaxation response
+nature_relaxation_counts = data['Is walking in nature in real life relaxing for you?'].value_counts()
+nature_relaxation_percentages = data['Is walking in nature in real life relaxing for you?'].value_counts(normalize=True) * 100
 
+# Combine all the data into a DataFrame for a comprehensive table
+demographics_table = pd.DataFrame({
+    'Category': ['Gender', 'Age Range', 'Occupation', 'VR Experience', 'Nature Relaxation'],
+    'Counts': [gender_counts.to_dict(), age_counts.to_dict(), employment_counts.to_dict(), vr_experience_counts.to_dict(), nature_relaxation_counts.to_dict()],
+    'Percentages': [gender_percentages.to_dict(), age_percentages.to_dict(), employment_percentages.to_dict(), vr_experience_percentages.to_dict(), nature_relaxation_percentages.to_dict()]
+})
 
+pd.set_option('display.max_rows', None)  # Ensure all rows are displayed
+pd.set_option('display.max_columns', None)  # Ensure all columns are displayed
+pd.set_option('display.width', None)  # Ensure the display width fits the data
+pd.set_option('display.max_colwidth', None)  # Ensure full width of column content is shown
+print(demographics_table)
 
-print("Number of participants in the age range 18-24:", num_participants_18_24)
-print("Number of participants in the age range 25-34:", num_participants_25_34)
-
-print("Num ppl employed:", num_employed)
-print("Number of male participants:", gender_counts.get('Male', 0))
-print("Number of female participants:", gender_counts.get('Female', 0))
-print("Number of diverse participants:", gender_counts.get('Another gender', 0))
+folder_path = 'POMS'
+output_file = 'demographics_table.csv'
+output_path = os.path.join(folder_path, output_file)
+demographics_table.to_csv(output_path, index=False)

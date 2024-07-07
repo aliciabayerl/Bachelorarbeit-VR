@@ -35,8 +35,17 @@ for condition in data['Condition'].unique():
         # Print the Wilcoxon test result and effect size
         print(f'Condition {condition}, Change_{mood}: Statistics={stat:.3f}, p={p_value:.3f}, Effect Size={effect_size:.3f}')
         
-        # Print hypothesis test result
-        if p_value < alpha:
-            print(f'Reject the null hypothesis: There is a significant change in {mood}.')
-        else:
-            print(f'Fail to reject the null hypothesis: There is no significant change in {mood}.')
+for mood in mood_states:
+        before_col = f'Before {mood}'
+        after_col = f'After {mood}'
+        
+        # Perform Wilcoxon signed-rank test
+        stat, p_value = wilcoxon(condition_data[before_col], condition_data[after_col])
+
+        # Calculate effect size
+        n = len(condition_data[before_col])
+        effect_size = calculate_effect_size(stat, n)
+        
+        # Print the Wilcoxon test result and effect size
+        print(f'ALL Participants: Change_{mood}: Statistics={stat:.3f}, p={p_value:.3f}, Effect Size={effect_size:.3f}')
+        

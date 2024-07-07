@@ -73,7 +73,6 @@ for mood in mood_states:
     if len(before_scores) > 1 and len(after_scores) > 1:
         differences = after_scores - before_scores
         ci = bootstrap(differences)
-        print(f"95% Confidence Interval for {mood}: {ci}")
         
         # Perform the Wilcoxon signed-rank test
         stat, p_value = wilcoxon(before_scores, after_scores, zero_method='wilcox', correction=False, mode='approx')

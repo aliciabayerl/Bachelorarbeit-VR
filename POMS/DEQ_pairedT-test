@@ -66,6 +66,7 @@ def analyze_and_plot(group_data, group_name):
             print(f"Condition {condition}: Mean Difference = {mean_diff:.2f}, Standard Deviation = {std_diff:.2f}, p-value = {p_val:.4f}, Participants = {condition_diff.shape[0]}")
         print()
 
+
     # Convert results to DataFrame for plotting
     results_df = pd.DataFrame(results)
 
@@ -96,6 +97,7 @@ def analyze_and_plot(group_data, group_name):
             capsize=5
         )
 
+
     # Customize the plot
     plt.title(f'Mean Change in Mood States by Condition ({group_name})', fontsize=16)
     plt.xlabel('Mood State', fontsize=14)
@@ -109,8 +111,10 @@ def analyze_and_plot(group_data, group_name):
     plt.savefig(output_image)
     plt.show()
 
+
 # Analyze and plot for no motion sickness group
 analyze_and_plot(no_motion_sickness, "No Motion Sickness")
 
 # Analyze and plot for motion sickness group
 analyze_and_plot(motion_sickness, "Motion Sickness")
+
