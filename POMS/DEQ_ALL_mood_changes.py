@@ -30,7 +30,7 @@ summary_stats = {
 plt.figure(figsize=(10, 6))  
 colors = ['#abd9e9' if stats['p-value'] > 0.05 else '#4575b4' for stats in summary_stats.values()]
 bars = sns.barplot(x=list(summary_stats.keys()), y=[data[f'Change_{mood}'].mean() for mood in mood_states], palette=colors)
-plt.title('Average Change in Mood States by Condition with Significance Highlighting')
+#plt.title('Average Change in Mood States by Condition with Significance Highlighting')
 plt.xlabel('Mood State')
 plt.ylabel('Average Change')
 plt.axhline(0, color='black', linewidth=0.8) 
