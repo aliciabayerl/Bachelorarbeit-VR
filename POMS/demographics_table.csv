@@ -1,6 +1,0 @@
-Category,Counts,Percentages
-Gender,"{'Female': 26, 'Male': 15, 'Another gender': 1}","{'Female': 61.904761904761905, 'Male': 35.714285714285715, 'Another gender': 2.380952380952381}"
-Age Range,"{'18-24': 31, '25-34': 11}","{'18-24': 73.80952380952381, '25-34': 26.190476190476193}"
-Occupation,"{'Student': 40, 'Employed': 2}","{'Student': 95.23809523809523, 'Employed': 4.761904761904762}"
-VR Experience,"{""I've had limited exposure to virtual environment, having tried them once or twice"": 29, 'No prior experience': 8, 'I engage occasionally with virtual environments': 5}","{""I've had limited exposure to virtual environment, having tried them once or twice"": 69.04761904761905, 'No prior experience': 19.047619047619047, 'I engage occasionally with virtual environments': 11.904761904761903}"
-Nature Relaxation,"{'Yes': 39, 'No': 3}","{'Yes': 92.85714285714286, 'No': 7.142857142857142}"

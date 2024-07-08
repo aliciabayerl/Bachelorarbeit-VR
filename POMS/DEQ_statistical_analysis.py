@@ -33,26 +33,22 @@ for mood in mood_states:
         std_diff = condition_diff.std()
         cohen_d = mean_diff / std_diff
         
-        print(f"Condition {condition}: p-value = {p_val:.4f}, Cohen's d = {cohen_d:.4f}")
+        # Calculate degrees of freedom
+        df = len(condition_diff) - 1
+        
+        print(f"Condition {condition}: t-statistic = {t_stat:.4f}, p-value = {p_val:.4f}, Cohen's d = {cohen_d:.4f}, df = {df}")
     print()
 
 # Perform statistical analysis and calculate Cohen's d for all participants combined
 print("Statistical Analysis for All Participants Across All Conditions:")
 for mood in ['Anger', 'Disgust', 'Fear', 'Anxiety', 'Sadness', 'Desire', 'Relaxation', 'Happiness']:
-    # Extract the differences for all participants
     differences = data[f'Difference_{mood}']
-
-    # Check if all values are zeros to avoid errors in the t-test
     if np.all(differences == 0):
         print(f"{mood}: No changes detected, skipping t-test.")
     else:
-        # Paired t-test
         t_stat, p_val = ttest_rel(differences, [0] * len(differences))
-        
-        # Calculate Cohen's d
         mean_diff = differences.mean()
         std_diff = differences.std(ddof=1)  # Use sample standard deviation
         cohen_d = mean_diff / std_diff if std_diff != 0 else 0  # Avoid division by zero
-        
-        print(f"{mood}: t-statistic = {t_stat:.4f}, p-value = {p_val:.4f}, Cohen's d = {cohen_d:.4f}")
-
+        df = len(differences) - 1  # Calculate degrees of freedom
+        print(f"{mood}: t-statistic = {t_stat:.4f}, p-value = {p_val:.4f}, Cohen's d = {cohen_d:.4f}, df = {df}")
