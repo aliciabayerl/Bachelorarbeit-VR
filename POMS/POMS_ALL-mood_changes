@@ -11,24 +11,26 @@ output_image_path = os.path.join(folder_path, 'Plot_Images')
 
 data = pd.read_csv(file_path)
 
-mood_states = ['Tension', 'Depression', 'Anger_x', 'Vigor', 'Fatigue', 'Confusion']
+mood_states = ['Tension', 'Depression', 'Anger', 'Vigor', 'Fatigue', 'Confusion']
+
+data.rename(columns={'After Anger_x': 'After Anger', 'Before Anger_x': 'Before Anger'}, inplace=True)
 for mood in mood_states:
     data[f'Change_{mood}'] = data[f'After {mood}'] - data[f'Before {mood}']
 
 summary_stats = {
     'Tension': {'p-value': 0.0687, 'd-value': -0.2885},
-    'Depression': {'p-value': 0.6569, 'd-value': -0.0690},
-    'Anger_x': {'p-value': 0.4706, 'd-value': -0.1124},
-    'Vigor': {'p-value': 0.0015, 'd-value': -0.5264},
-    'Fatigue': {'p-value': 0.0362, 'd-value': -0.3343},
-    'Confusion': {'p-value': 0.0093, 'd-value': -0.4215}
+    'Depression': {'p-value': 0.0093, 'd-value': -0.4215},
+    'Anger': {'p-value': 0.0362, 'd-value': -0.3343},
+    'Vigor': {'p-value': 0.6569, 'd-value': -0.0690},
+    'Fatigue': {'p-value': 0.0015, 'd-value': -0.5264},
+    'Confusion': {'p-value': 0.4706, 'd-value': -0.1124}
 }
 
 # Plotting
 plt.figure(figsize=(10, 6))  
 colors = ['#abd9e9' if stats['p-value'] > 0.05 else '#4575b4' for stats in summary_stats.values()]
 bars = sns.barplot(x=list(summary_stats.keys()), y=[data[f'Change_{mood}'].mean() for mood in mood_states], palette=colors)
-plt.title('Average Change in Mood States by Condition with Significance Highlighting')
+#plt.title('Average Change in Mood States by Condition with Significance Highlighting')
 plt.xlabel('Mood State')
 plt.ylabel('Average Change')
 plt.axhline(0, color='black', linewidth=0.8) 
