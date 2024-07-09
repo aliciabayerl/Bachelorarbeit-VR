@@ -48,7 +48,7 @@ for score in change_scores:
     for i in range(len(groups)):
         for j in range(i + 1, len(groups)):
             effect_size = cohen_d(groups[i][score].dropna(), groups[j][score].dropna())
-            #print(f'Effect Size (Cohen\'s d) between Group {i} and Group {j} for {score}: {effect_size:.4f}')
+            print(f'Effect Size (Cohen\'s d) between Group {i} and Group {j} for {score}: {effect_size:.4f}')
     
     if p_value < 0.05:
         print(f'There is a significant difference in {score} across the groups')
