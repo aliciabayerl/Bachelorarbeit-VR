@@ -44,16 +44,16 @@ for score in change_scores:
     
     print(f'{score}: Statistics={stat}, p-value={p_value}, Epsilon Squared={epsilon_squared:.4f}')
     
+    # Effect size calculation for all pairs
+    for i in range(len(groups)):
+        for j in range(i + 1, len(groups)):
+            effect_size = cohen_d(groups[i][score].dropna(), groups[j][score].dropna())
+            #print(f'Effect Size (Cohen\'s d) between Group {i} and Group {j} for {score}: {effect_size:.4f}')
+    
     if p_value < 0.05:
         print(f'There is a significant difference in {score} across the groups')
         dunn_results = posthoc_dunn(data, val_col=score, group_col='Condition')
         print(dunn_results)
-        
-        # Effect size calculation for significant pairs
-        for i in range(len(groups)):
-            for j in range(i + 1, len(groups)):
-                effect_size = cohen_d(groups[i][score].dropna(), groups[j][score].dropna())
-                print(f'Effect Size (Cohen\'s d) between Group {i} and Group {j} for {score}: {effect_size:.4f}')
-    else:
-        print(f'There is no significant difference in {score} across the groups')
-    print()
+    #else:
+        #print(f'There is no significant difference in {score} across the groups')
+    #print()
