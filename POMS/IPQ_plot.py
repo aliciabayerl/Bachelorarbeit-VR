@@ -16,7 +16,8 @@ condition_means = ipq_scores.groupby('Condition')[['SP_mean', 'INV_mean', 'REAL_
 melted_data = condition_means.melt(id_vars='Condition', var_name='Presence_Type', value_name='Mean_Score')
 
 plt.figure(figsize=(12, 8))
-sns.barplot(x='Condition', y='Mean_Score', hue='Presence_Type', data=melted_data, palette='viridis')
+palette_colors = ["#abd9e9", "#74add1", "#4575b4", "#800080"]  
+sns.barplot(x='Condition', y='Mean_Score', hue='Presence_Type', data=melted_data, palette=palette_colors)
 plt.title('Mean Presence Scores by Condition')
 plt.xlabel('Condition')
 plt.ylabel('Mean Score')
@@ -24,7 +25,7 @@ plt.legend(title='Presence Type')
 plt.grid(True)
 
 image_path = 'POMS/Plot_Images'
-output_image = os.path.join(image_path, 'IPQ_PresencePlot')
+output_image = os.path.join(image_path, 'IPQ_PresencePlot.png')  # Ensure the file extension is included
 plt.tight_layout()
 plt.savefig(output_image)
 plt.show()
