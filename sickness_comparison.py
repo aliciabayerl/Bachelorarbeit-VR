@@ -18,12 +18,6 @@ total_people_in_condition = data.groupby('Condition_x').size()
 
 motion_sickness_percentage = (motion_sickness_counts / total_people_in_condition) * 100
 
-""" Percentage of people with motion sickness in each condition:
-Condition_x
-0    50.000000
-1    50.000000
-2    78.571429 """
-
 print("Percentage of people with motion sickness in each condition:")
 print(motion_sickness_percentage)
 
@@ -41,12 +35,12 @@ plt.figure(figsize=(12, 8))
 bar_width = 0.35
 index = np.arange(len(mood_states)) 
 
-plt.bar(index, avg_change_motion_sickness, bar_width, label='Motion Sickness')
-plt.bar(index + bar_width, avg_change_no_motion_sickness, bar_width, label='No Motion Sickness')
+plt.bar(index, avg_change_motion_sickness, bar_width, label='Motion Sickness', color="#4575b4")
+plt.bar(index + bar_width, avg_change_no_motion_sickness, bar_width, label='No Motion Sickness', color="#abd9e9")
 
 plt.xlabel('Mood State')
 plt.ylabel('Average Change')
-plt.title('Average Change in Mood States for Participants with and without Motion Sickness')
+#plt.title('Average Change in Mood States for Participants with and without Motion Sickness')
 plt.xticks(index + bar_width / 2, mood_states)
 plt.legend()
 plt.tight_layout()
@@ -54,7 +48,6 @@ plt.tight_layout()
 # Save plot
 output_image = os.path.join('POMS/Plot_Images', 'DEQ_sickness_comparison_plot.png')
 plt.savefig(output_image)
-
 
 plt.show()
 
@@ -65,7 +58,6 @@ columns_to_select = ['Participant', 'Condition_x', 'Before Anger', 'After Anger'
 
 participant_scores = no_motion_sickness[columns_to_select]
 participant_scores_ms = motion_sickness[columns_to_select]
-
 
 output_file = 'DEQ_MS_participant_scores.csv'
 output_path = os.path.join(folder_path, output_file)

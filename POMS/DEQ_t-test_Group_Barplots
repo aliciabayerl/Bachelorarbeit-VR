@@ -94,7 +94,7 @@ plt.legend(title='Group', bbox_to_anchor=(1.05, 1), loc='upper left')
 plt.xticks(rotation=45)
 
 # Save and show the plot
-output_image = os.path.join(image_path, 'DEQ_statistical_analysis_motion_sickness_sound.png')
+output_image = os.path.join(image_path, 'DEQ_statistical_analysis_motion_sickness_sound2.png')
 plt.tight_layout()
 plt.savefig(output_image)
 plt.show()
