@@ -38,7 +38,7 @@ for mood in mood_states:
     no_sound_data = no_motion_sickness[no_motion_sickness['Combined_Condition'] == 'No Sound'][f'Change_{mood}'].dropna()
     auditory_stimuli_data = no_motion_sickness[no_motion_sickness['Combined_Condition'] == 'Auditory Stimuli'][f'Change_{mood}'].dropna()
 
-    t_stat, p_val = ttest_ind(no_sound_data, auditory_stimuli_data, equal_var=False)  # Welch's t-test for unequal variances
+    t_stat, p_val = ttest_ind(no_sound_data, auditory_stimuli_data) 
     results.append({'Mood State': mood, 't-statistic': t_stat, 'p-value': p_val})
 
 # Create DataFrame to display results
