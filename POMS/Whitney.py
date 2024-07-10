@@ -34,6 +34,10 @@ desc_stats_0.to_csv('condition_0.csv')
 
 mood_states = ['Change_Tension', 'Change_Vigor', 'Change_Confusion', 'Change_Fatigue', 'Change_Anger', 'Change_Depression']
 
+# Group conditions
+data['Condition_Grouped'] = data['Condition'].replace({1: '1_and_2', 2: '1_and_2'})
+
+
 plt.figure(figsize=(15, 20))
 for i, mood in enumerate(mood_states, start=1):
     plt.subplot(3, 2, i)
@@ -42,7 +46,7 @@ for i, mood in enumerate(mood_states, start=1):
 
 plt.tight_layout()
 plt.savefig('mood_changes_boxplots.png')
-plt.close()
+#plt.close()
 
 # Function to calculate rank-biserial correlation as effect size for Mann-Whitney U test
 def rank_biserial_effect_size(u_stat, n1, n2):
