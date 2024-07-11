@@ -18,7 +18,7 @@ melted_data = condition_means.melt(id_vars='Condition', var_name='Presence_Type'
 plt.figure(figsize=(12, 8))
 palette_colors = ["#abd9e9", "#74add1", "#4575b4", "#800080"]  
 sns.barplot(x='Condition', y='Mean_Score', hue='Presence_Type', data=melted_data, palette=palette_colors)
-plt.title('Mean Presence Scores by Condition')
+#plt.title('Mean Presence Scores by Condition')
 plt.xlabel('Condition')
 plt.ylabel('Mean Score')
 plt.legend(title='Presence Type')
