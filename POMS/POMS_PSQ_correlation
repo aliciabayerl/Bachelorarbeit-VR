@@ -26,12 +26,12 @@ change_scores = ['Change_Tension', 'Change_Vigor', 'Change_Confusion', 'Change_F
 # Merge PSQ-20 and POMS data
 merged_data = pd.merge(psq20_scores, data, on='Participant')
 
-# Function to calculate correlations
+# Function to calculate correlations and include p-values
 def calculate_correlations(data, target_variable, variables):
     correlations = {}
     for variable in variables:
-        corr, _ = spearmanr(data[target_variable], data[variable])
-        correlations[variable] = corr
+        corr, p_val = spearmanr(data[target_variable], data[variable])
+        correlations[variable] = (corr, p_val)
     return correlations
 
 # Calculate and print correlations between PSQ-20 variables and POMS change scores
@@ -42,13 +42,13 @@ for psq20_variable in psq20_variables:
     psq20_correlations = calculate_correlations(merged_data, psq20_variable, change_scores)
     psq20_correlations_dict[psq20_variable] = psq20_correlations
     print(f"\nCorrelations with {psq20_variable}:")
-    for variable, corr in psq20_correlations.items():
-        print(f"Spearman correlation between {psq20_variable} and {variable}: {corr:.3f}")
+    for variable, (corr, p_val) in psq20_correlations.items():
+        print(f"Spearman correlation between {psq20_variable} and {variable}: {corr:.3f}, p-value={p_val:.4f}")
 
 # Plotting the correlations for visualization
 def plot_correlations(correlations_dict, title):
     variables = list(correlations_dict.keys())
-    correlation_values = list(correlations_dict.values())
+    correlation_values = [corr[0] for corr in correlations_dict.values()]  # Extracting correlation coefficients
 
     plt.figure(figsize=(10, 6))
     plt.barh(variables, correlation_values, color='skyblue')

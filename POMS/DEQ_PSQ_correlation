@@ -22,25 +22,23 @@ data['Change_Desire'] = data['After Desire'] - data['Before Desire']
 data['Change_Relaxation'] = data['After Relaxation'] - data['Before Relaxation']
 data['Change_Happiness'] = data['After Happiness'] - data['Before Happiness']
 
+change_scores = [
+    'Change_Anger', 'Change_Disgust', 'Change_Fear', 'Change_Anxiety', 
+    'Change_Sadness', 'Change_Desire', 'Change_Relaxation', 'Change_Happiness'
+]
 
-change_scores = ['Change_Anger', 'Change_Disgust', 'Change_Fear', 'Change_Anxiety', 'Change_Sadness', 'Change_Desire', 'Change_Relaxation', 'Change_Happiness']
-
-
-
-negative_mood_change = data[['Change_Anger', 'Change_Disgust', 'Change_Fear', 'Change_Anxiety', 'Change_Sadness', 'Change_Desire']].sum(axis=1)
-
-# Merge PSQ-20 and POMS data
+# Merge PSQ-20 and DEQ data
 merged_data = pd.merge(psq20_scores, data, on='Participant')
 
 # Function to calculate correlations
 def calculate_correlations(data, target_variable, variables):
     correlations = {}
     for variable in variables:
-        corr, _ = spearmanr(data[target_variable], data[variable])
-        correlations[variable] = corr
+        corr, p_val = spearmanr(data[target_variable], data[variable])
+        correlations[variable] = (corr, p_val)
     return correlations
 
-# Calculate and print correlations between PSQ-20 variables and POMS change scores
+# Calculate and print correlations between PSQ-20 variables and DEQ change scores
 psq20_variables = ['Overall_Score']  # Update with actual PSQ-20 column names if different
 psq20_correlations_dict = {}
 
@@ -48,13 +46,13 @@ for psq20_variable in psq20_variables:
     psq20_correlations = calculate_correlations(merged_data, psq20_variable, change_scores)
     psq20_correlations_dict[psq20_variable] = psq20_correlations
     print(f"\nCorrelations with {psq20_variable}:")
-    for variable, corr in psq20_correlations.items():
-        print(f"Spearman correlation between {psq20_variable} and {variable}: {corr:.3f}")
+    for variable, (corr, p_val) in psq20_correlations.items():
+        print(f"Spearman correlation between {psq20_variable} and {variable}: {corr:.3f}, p-value={p_val:.4f}")
 
 # Plotting the correlations for visualization
 def plot_correlations(correlations_dict, title):
     variables = list(correlations_dict.keys())
-    correlation_values = list(correlations_dict.values())
+    correlation_values = [corr[0] for corr in correlations_dict.values()]  # Extracting correlation coefficients
 
     plt.figure(figsize=(10, 6))
     plt.barh(variables, correlation_values, color='skyblue')
