@@ -51,37 +51,39 @@ def calculate_psq_scores(df):
 
     first_participant_name = df.iloc[0]['Name']
     print("Name of the first participant:", first_participant_name)
-    participant_scores_psq = pd.DataFrame(columns=['Participant', 'Condition', 'Gender', 'Worries', 'Tension', 'Joy', 'Demands'])
+    participant_scores_psq = pd.DataFrame(columns=['Participant', 'Condition', 'Gender', 'Worries', 'Tension', 'Joy', 'Demands', 'Overall_Score'])
 
     for index, participant in df.iterrows():
-        participant_scores_psq.loc[index] = [index + 1, participant['Condition'], participant['Gender'], 0, 0, 0, 0]
+        participant_scores_psq.loc[index] = [index + 1, participant['Condition'], participant['Gender'], 0, 0, 0, 0, 0]
+
+        individual_scores = []
 
         for score, mood_states in score_mappings.items():
             mood_state_score = 0
             count = 0 
 
-            mood_state_scores = []  
-
             for col in df.columns:
                 if "PSQ20 >>" in col and col.split(" >> ")[1] in mood_states:
-                    # Subtract 6 if the score needs to be inverted
                     score_value = convert_psq_values(participant[col])
                     if col.split(" >> ")[1] in ['You feel rested', 'You feel calm', 'You have enough time for yourself']:
                         score_value = 6 - score_value
+                    if score == 'Joy':
+                        score_value = 6 - score_value  # Invert Joy items for the overall score
+
                     mood_state_score += score_value
                     count += 1
 
-                    mood_state_scores.append((col.split(" >> ")[1], score_value))
-            
-            print(f"Participant {index + 1}, Score: {score}, Mood States: {mood_states}, Mood State Scores: {mood_state_scores}, Count: {count}")
-
             if count > 0:
-                mood_state_score = int((((mood_state_score / count) - 1) / 4) * 100)
-                print(f"Calculated Mood State Score: {mood_state_score}")
+                mood_state_score = (((mood_state_score / count) - 1) / 4) * 100
 
             participant_scores_psq.at[index, score] = mood_state_score
+            individual_scores.append(mood_state_score)
 
-    participant_scores_psq[['Worries', 'Tension', 'Joy', 'Demands']] = participant_scores_psq[['Worries', 'Tension', 'Joy', 'Demands']].astype(int)
+        # Calculate overall score as the mean of the individual scores
+        overall_score = sum(individual_scores) / len(individual_scores)
+        participant_scores_psq.at[index, 'Overall_Score'] = overall_score
+
+    participant_scores_psq[['Worries', 'Tension', 'Joy', 'Demands', 'Overall_Score']] = participant_scores_psq[['Worries', 'Tension', 'Joy', 'Demands', 'Overall_Score']].astype(int)
     print(participant_scores_psq)
 
     return participant_scores_psq
