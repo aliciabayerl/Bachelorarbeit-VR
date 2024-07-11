@@ -15,7 +15,7 @@ data['Change_Tension'] = data['After Tension'] - data['Before Tension']
 data['Change_Vigor'] = data['After Vigor'] - data['Before Vigor']
 data['Change_Confusion'] = data['After Confusion'] - data['Before Confusion']
 data['Change_Fatigue'] = data['After Fatigue'] - data['Before Fatigue']
-data['Change_Anger'] = data['After Anger_x'] - data['Before Anger_x']
+data['Change_Anger'] = data['After Anger'] - data['Before Anger']
 data['Change_Depression'] = data['After Depression'] - data['Before Depression']
 
 # Split data by condition
@@ -34,6 +34,7 @@ print("Condition 3 Descriptive Statistics:\n", desc_stats_3)
 
 # List of mood states
 mood_states = ['Change_Tension', 'Change_Vigor', 'Change_Confusion', 'Change_Fatigue', 'Change_Anger', 'Change_Depression']
+data.rename(columns={'After Anger_x': 'After Anger', 'Before Anger_x': 'Before Anger'}, inplace=True)
 
 # Generate box plots in a single image
 plt.figure(figsize=(15, 20))

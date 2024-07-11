@@ -2,6 +2,7 @@ import pandas as pd
 from scipy.stats import ttest_ind
 import os
 import matplotlib.pyplot as plt
+import numpy as np
 
 # Load the data
 folder_path = 'POMS'
@@ -23,7 +24,14 @@ for mood_state in mood_states:
 
 change_scores = [f'Change_{mood_state}' for mood_state in mood_states]
 
-# Perform the t-tests for both groups
+# Function to calculate Cohen's d
+def cohen_d(x, y):
+    nx = len(x)
+    ny = len(y)
+    dof = nx + ny - 2
+    return (np.mean(x) - np.mean(y)) / np.sqrt(((nx-1)*np.var(x, ddof=1) + (ny-1)*np.var(y, ddof=1)) / dof)
+
+# Perform the t-tests for both groups and calculate effect sizes
 results_motion_sickness = []
 results_no_motion_sickness = []
 
@@ -34,16 +42,17 @@ for mood_state in mood_states:
     if len(no_motion_sickness_diff) > 0 and len(motion_sickness_diff) > 0:
         # Independent two-sample t-test
         t_stat, p_val = ttest_ind(no_motion_sickness_diff, motion_sickness_diff)
+        effect_size = cohen_d(no_motion_sickness_diff, motion_sickness_diff)
         
-        results_no_motion_sickness.append([mood_state, len(no_motion_sickness_diff), no_motion_sickness_diff.mean(), no_motion_sickness_diff.std(), p_val])
-        results_motion_sickness.append([mood_state, len(motion_sickness_diff), motion_sickness_diff.mean(), motion_sickness_diff.std(), p_val])
+        results_no_motion_sickness.append([mood_state, len(no_motion_sickness_diff), no_motion_sickness_diff.mean(), no_motion_sickness_diff.std(), p_val, effect_size])
+        results_motion_sickness.append([mood_state, len(motion_sickness_diff), motion_sickness_diff.mean(), motion_sickness_diff.std(), p_val, effect_size])
     else:
-        results_no_motion_sickness.append([mood_state, len(no_motion_sickness_diff), None, None, None])
-        results_motion_sickness.append([mood_state, len(motion_sickness_diff), None, None, None])
+        results_no_motion_sickness.append([mood_state, len(no_motion_sickness_diff), None, None, None, None])
+        results_motion_sickness.append([mood_state, len(motion_sickness_diff), None, None, None, None])
 
 # Create DataFrames for the results
-results_no_motion_sickness_df = pd.DataFrame(results_no_motion_sickness, columns=['Mood State', 'N', 'Mean', 'Std', 'p-value'])
-results_motion_sickness_df = pd.DataFrame(results_motion_sickness, columns=['Mood State', 'N', 'Mean', 'Std', 'p-value'])
+results_no_motion_sickness_df = pd.DataFrame(results_no_motion_sickness, columns=['Mood State', 'N', 'Mean', 'Std', 'p-value', 'Effect Size (Cohen\'s d)'])
+results_motion_sickness_df = pd.DataFrame(results_motion_sickness, columns=['Mood State', 'N', 'Mean', 'Std', 'p-value', 'Effect Size (Cohen\'s d)'])
 
 # Plot the results
 fig, (ax1, ax2) = plt.subplots(nrows=2, ncols=1, figsize=(10, 12))  # Two subplots, one for each condition
