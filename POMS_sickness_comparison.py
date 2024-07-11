@@ -16,7 +16,8 @@ data = pd.read_csv(file_path)
 motion_sickness = data[data['Did you experience any discomfort or adverse effects (physical or emotional, like nausea/dizziness due to motion sickness) during or after the virtual reality experience?'] == 'Yes']
 no_motion_sickness = data[data['Did you experience any discomfort or adverse effects (physical or emotional, like nausea/dizziness due to motion sickness) during or after the virtual reality experience?'] == 'No']
 
-mood_states = ['Tension', 'Depression', 'Anger_x', 'Vigor', 'Fatigue', 'Confusion']
+mood_states = ['Tension', 'Depression', 'Anger', 'Vigor', 'Fatigue', 'Confusion']
+data.rename(columns={'After Anger_x': 'After Anger', 'Before Anger_x': 'Before Anger'}, inplace=True)
 
 # Calculate the change in mood states for participants with and without motion sickness
 for mood_state in mood_states:
@@ -30,12 +31,12 @@ plt.figure(figsize=(12, 8))
 bar_width = 0.35
 index = np.arange(len(mood_states)) 
 
-plt.bar(index, avg_change_motion_sickness, bar_width, label='Motion Sickness')
-plt.bar(index + bar_width, avg_change_no_motion_sickness, bar_width, label='No Motion Sickness')
+plt.bar(index, avg_change_motion_sickness, bar_width, label='Motion Sickness', color="#4575b4")
+plt.bar(index + bar_width, avg_change_no_motion_sickness, bar_width, label='No Motion Sickness', color="#abd9e9")
 
 plt.xlabel('Mood State')
 plt.ylabel('Average Change')
-plt.title('Average Change in Mood States for Participants with and without Motion Sickness')
+#plt.title('Average Change in Mood States for Participants with and without Motion Sickness')
 plt.xticks(index + bar_width / 2, mood_states)
 plt.legend()
 plt.tight_layout()
@@ -49,7 +50,7 @@ plt.show()
 # new csv POMS no motion sickness
 columns_to_select = ['Participant', 'Condition_x', 'Before Tension', 'After Tension', 'Before Vigor', 'After Vigor', 
                      'Before Confusion', 'After Confusion', 'Before Fatigue', 'After Fatigue', 
-                     'Before Anger_x', 'After Anger_x', 'Before Depression', 'After Depression']
+                     'Before Anger', 'After Anger', 'Before Depression', 'After Depression']
 
 participant_scores = no_motion_sickness[columns_to_select]
 participant_scores_ms = motion_sickness[columns_to_select]

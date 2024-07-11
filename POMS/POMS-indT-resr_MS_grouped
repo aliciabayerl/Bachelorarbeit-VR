@@ -14,7 +14,7 @@ file_path = os.path.join(folder_path, input_file)
 data = pd.read_csv(file_path)
 
 # Define the column for motion sickness
-motion_sickness_col =  'Did you experience any discomfort or adverse effects (physical or emotional, like nausea/dizziness due to motion sickness) during or after the virtual reality experience?'
+motion_sickness_col = 'Did you experience any discomfort or adverse effects (physical or emotional, like nausea/dizziness due to motion sickness) during or after the virtual reality experience?'
 
 # Filter out participants without motion sickness
 no_motion_sickness = data[data[motion_sickness_col] == 'No'].copy()
@@ -27,7 +27,9 @@ no_motion_sickness['Combined_Condition'] = no_motion_sickness['Condition_x'].rep
 })
 
 # Calculate change scores for each mood state
-mood_states = ['Anger', 'Disgust', 'Fear', 'Anxiety', 'Sadness', 'Desire', 'Relaxation', 'Happiness']
+mood_states = ['Tension', 'Vigor', 'Confusion', 'Fatigue', 'Anger', 'Depression']
+data.rename(columns={'After Anger_x': 'After Anger', 'Before Anger_x': 'Before Anger'}, inplace=True)
+
 for mood_state in mood_states:
     no_motion_sickness[f'Change_{mood_state}'] = no_motion_sickness[f'After {mood_state}'] - no_motion_sickness[f'Before {mood_state}']
 
@@ -72,6 +74,6 @@ plt.tight_layout()
 print(results_df)
 
 # Save the plot
-output_image = os.path.join(folder_path, 'DEQ_change_comparison_plot.png')
+output_image = os.path.join(folder_path, 'POMS_change_comparison_plot.png')
 plt.savefig(output_image)
 plt.show()
