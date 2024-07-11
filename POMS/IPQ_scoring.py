@@ -76,18 +76,30 @@ def compute_ipq_means(data, ipq_items):
         valid_items = [item for item in items if item in data.columns]
         if valid_items:
             data[f'{category}_mean'] = data[valid_items].mean(axis=1)
+            data[f'{category}_median'] = data[valid_items].median(axis=1)
+
         else:
             data[f'{category}_mean'] = None
+            data[f'{category}_median'] = None
+
 
     data['Participant'] = data.index + 1
 
 compute_ipq_means(data, ipq_items)
 selected_columns = ['Condition','Participant'] + [f'{category}_mean' for category in ipq_items.keys()]
+selected_columns2 = ['Condition','Participant'] + [f'{category}_median' for category in ipq_items.keys()]
+
 ipq_scores_data = data[selected_columns]
+ipq_scores_data2 = data[selected_columns2]
 
 output_file = 'IPQ_scores.csv'
+output_file2 = 'IPQ_scores_median.csv'
+
 output_file_path = os.path.join(folder_path, output_file)
+output_file_path2 = os.path.join(folder_path, output_file2)
+
 ipq_scores_data.to_csv(output_file_path, index=False)
+ipq_scores_data2.to_csv(output_file_path2, index=False)
 
 
 

@@ -37,9 +37,10 @@ merged_data['Overall_Presence'] = merged_data[['SP_mean', 'INV_mean', 'REAL_mean
 def calculate_correlations(ipq_data, condition_data, ipq_variable):
     correlations = {}
     for variable in ['Change_Anger', 'Change_Disgust', 'Change_Fear', 'Change_Anxiety', 'Change_Sadness', 'Change_Desire', 'Change_Relaxation', 'Change_Happiness']:
-        corr, _ = spearmanr(ipq_data[ipq_variable], condition_data[variable])
-        correlations[variable] = corr
+        corr, p_val = spearmanr(ipq_data[ipq_variable], condition_data[variable])
+        correlations[variable] = (corr, p_val)
     return correlations
+
 
 def plot_presence_by_condition(data):
     plt.figure(figsize=(10, 6))
@@ -65,6 +66,5 @@ for ipq_variable in ipq_variables:
     correlations_dict[ipq_variable] = correlations
     
     print(f"\n{title}:")
-    for variable, corr in correlations.items():
-        print(f"Spearman correlation between {ipq_variable} and {variable}: {corr:.3f}")
-
+    for variable, (corr, p_val) in correlations.items():
+        print(f"Spearman correlation between {ipq_variable} and {variable}: {corr:.3f}, p-value={p_val:.4f}")

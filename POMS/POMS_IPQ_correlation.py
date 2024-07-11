@@ -23,22 +23,18 @@ overall_mood_disturbance = negative_mood_change - participant_scores['Change_Vig
 participant_scores['Overall_Mood_Disturbance'] = overall_mood_disturbance
 
 merged_data = pd.merge(ipq_scores, participant_scores, on='Participant')
-
 merged_data['Overall_Presence'] = merged_data[['SP_mean', 'INV_mean', 'REAL_mean']].mean(axis=1)
 
 def calculate_correlations(ipq_data, condition_data, ipq_variable):
     correlations = {}
     for variable in ['Change_Tension', 'Change_Vigor', 'Change_Confusion', 'Change_Fatigue', 'Change_Anger', 'Change_Depression', 'Overall_Mood_Disturbance']:
-        corr, _ = spearmanr(ipq_data[ipq_variable], condition_data[variable])
-        correlations[variable] = corr
+        corr, p_val = spearmanr(ipq_data[ipq_variable], condition_data[variable])
+        correlations[variable] = (corr, p_val)
     return correlations
 
 def plot_presence_by_condition(data):
     plt.figure(figsize=(10, 6))
-    
     condition_means = data.groupby('Condition_x')['Overall_Presence'].mean().reset_index()
-    
-    # Plotting the bar plot
     sns.barplot(x='Condition_x', y='Overall_Presence', data=condition_means, palette='viridis')
     plt.title('Average Overall Sense of Presence by Condition')
     plt.xlabel('Condition')
@@ -57,5 +53,5 @@ for ipq_variable in ipq_variables:
     correlations_dict[ipq_variable] = correlations
     
     print(f"\n{title}:")
-    for variable, corr in correlations.items():
-        print(f"Spearman correlation between {ipq_variable} and {variable}: {corr:.3f}")
+    for variable, (corr, p_val) in correlations.items():
+        print(f"Spearman correlation between {ipq_variable} and {variable}: {corr:.3f}, p-value={p_val:.4f}")
