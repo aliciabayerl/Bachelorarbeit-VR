@@ -14,7 +14,7 @@ file_path = os.path.join(folder_path, input_file)
 participant_scores = pd.read_csv(file_path)
 
 # Define mood states
-mood_states = ['Worries', 'Tension', 'Joy', 'Demands']
+mood_states = ['Worries', 'Tension', 'Joy', 'Demands', 'Overall_Score']
 
 # Calculate overall average PSQ scores for each mood state
 average_scores = [participant_scores[mood_state].mean() for mood_state in mood_states]
@@ -22,12 +22,12 @@ average_scores = [participant_scores[mood_state].mean() for mood_state in mood_s
 # Create a bar plot
 fig, ax = plt.subplots(figsize=(10, 6))
 
-ax.bar(mood_states, average_scores, color='skyblue')
+ax.bar(mood_states, average_scores, color='#4575b4')
 
 # Set plot labels and title
 ax.set_xlabel('Mood State')
 ax.set_ylabel('Average Score')
-ax.set_title('Overall Average PSQ Scores')
+#ax.set_title('Overall Average PSQ Scores')
 plt.grid(True)
 
 # Save plot
