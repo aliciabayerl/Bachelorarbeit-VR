@@ -1,53 +1,61 @@
 import pandas as pd
 import os
 
-# Load the data from the CSV file
+# Define the path to the folder and files
 folder_path = 'POMS'
 participant_scores_file = os.path.join(folder_path, 'participant_scores_deq.csv')
+output_folder = os.path.join(folder_path, 'DEQ_descriptive_folder')
+
+# Ensure the output folder exists
+os.makedirs(output_folder, exist_ok=True)
+
+# Load the data
 data = pd.read_csv(participant_scores_file)
 
-# List of mood states
+# Define mood states
 mood_states = ['Anger', 'Disgust', 'Fear', 'Anxiety', 'Sadness', 'Desire', 'Relaxation', 'Happiness']
 
-# Initialize a dictionary to store descriptive statistics
-descriptive_stats = {}
+# Function to calculate descriptive statistics
+def descriptive_statistics(data, conditions=None):
+    if conditions:
+        data = data[data['Condition'].isin(conditions)]
+    stats = {}
+    for mood in mood_states:
+        before_col = f'Before {mood}'
+        after_col = f'After {mood}'
+        stats[mood] = {
+            'Before Mean': round(data[before_col].mean(), 1),
+            'Before Std Dev': round(data[before_col].std(), 1),
+            'Before Min': round(data[before_col].min(), 1),
+            'Before Max': round(data[before_col].max(), 1),
+            'Before Median': round(data[before_col].median(), 1),
+            'Before Q1': round(data[before_col].quantile(0.25), 1),
+            'Before Q3': round(data[before_col].quantile(0.75), 1),
+            'Before IQR': round(data[before_col].quantile(0.75) - data[before_col].quantile(0.25), 1),
 
-# Calculate descriptive statistics for each mood state
-for mood in mood_states:
-    before_col = f'Before {mood}'
-    after_col = f'After {mood}'
+            'After Mean': round(data[after_col].mean(), 1),
+            'After Std Dev': round(data[after_col].std(), 1),
+            'After Min': round(data[after_col].min(), 1),
+            'After Max': round(data[after_col].max(), 1),
+            'After Median': round(data[after_col].median(), 1),
+            'After Q1': round(data[after_col].quantile(0.25), 1),
+            'After Q3': round(data[after_col].quantile(0.75), 1),
+            'After IQR': round(data[after_col].quantile(0.75) - data[after_col].quantile(0.25), 1)
 
-    descriptive_stats[mood] = {
-        'Before Mean': data[before_col].mean(),
-        'Before Median': data[before_col].median(),
-        'Before Std Dev': data[before_col].std(),
-        'Before Min': data[before_col].min(),
-        'Before Max': data[before_col].max(),
-        'Before Q1': data[before_col].quantile(0.25),
-        'Before Q3': data[before_col].quantile(0.75),
-        'Before IQR': data[before_col].quantile(0.75) - data[before_col].quantile(0.25),
-        'After Mean': data[after_col].mean(),
-        'After Median': data[after_col].median(),
-        'After Std Dev': data[after_col].std(),
-        'After Min': data[after_col].min(),
-        'After Max': data[after_col].max(),
-        'After Q1': data[after_col].quantile(0.25),
-        'After Q3': data[after_col].quantile(0.75),
-        'After IQR': data[after_col].quantile(0.75) - data[after_col].quantile(0.25)
-    }
+        }
+    return pd.DataFrame(stats).T  # Transpose to have mood states as rows
 
-# Convert the descriptive statistics dictionary to a DataFrame
-stats_df = pd.DataFrame(descriptive_stats).T
+# Calculate and save stats for all participants
+all_stats = descriptive_statistics(data)
+all_stats.to_csv(os.path.join(output_folder, 'all_participants_stats.csv'))
 
-# Save the descriptive statistics to a CSV file
-stats_df.to_csv('descriptive_statistics_deq.csv')
+# Calculate and save stats by each condition
+for condition in sorted(data['Condition'].unique()):
+    condition_stats = descriptive_statistics(data, [condition])
+    condition_stats.to_csv(os.path.join(output_folder, f'condition_{condition}_stats.csv'))
 
-# Calculate summary statistics by condition and save to a CSV file
-summary_by_condition = data.groupby('Condition').describe().T
-summary_by_condition.to_csv('summary_statistics_by_condition.csv')
+# Calculate and save stats for combined conditions (1 and 2)
+combined_stats = descriptive_statistics(data, [1, 2])
+combined_stats.to_csv(os.path.join(output_folder, 'combined_conditions_1_and_2_stats.csv'))
 
-# Print the descriptive statistics and summary statistics by condition
-print("Descriptive Statistics:")
-print(stats_df)
-print("\nSummary Statistics by Condition:")
-print(summary_by_condition)
+print("Descriptive statistics for all and each condition have been calculated and saved.")
