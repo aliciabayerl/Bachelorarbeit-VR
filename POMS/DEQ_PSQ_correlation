@@ -6,13 +6,14 @@ import matplotlib.pyplot as plt
 
 folder_path = 'POMS'
 
-participant_scores = os.path.join(folder_path, 'participant_scores_deq.csv')
-data = pd.read_csv(participant_scores)
+participant_scores_file = os.path.join(folder_path, 'participant_scores_deq.csv')
+data = pd.read_csv(participant_scores_file)
 
 # Load PSQ-20 scores
 psq20_scores_file = os.path.join(folder_path, 'participant_scores_psq.csv')  
 psq20_scores = pd.read_csv(psq20_scores_file)
 
+# Calculate change scores for each mood state in DEQ data
 data['Change_Anger'] = data['After Anger'] - data['Before Anger']
 data['Change_Disgust'] = data['After Disgust'] - data['Before Disgust']
 data['Change_Fear'] = data['After Fear'] - data['Before Fear']
@@ -30,7 +31,7 @@ change_scores = [
 # Merge PSQ-20 and DEQ data
 merged_data = pd.merge(psq20_scores, data, on='Participant')
 
-# Function to calculate correlations
+# Function to calculate correlations and include p-values
 def calculate_correlations(data, target_variable, variables):
     correlations = {}
     for variable in variables:
@@ -38,10 +39,11 @@ def calculate_correlations(data, target_variable, variables):
         correlations[variable] = (corr, p_val)
     return correlations
 
-# Calculate and print correlations between PSQ-20 variables and DEQ change scores
-psq20_variables = ['Overall_Score']  # Update with actual PSQ-20 column names if different
+# Define the PSQ-20 variables you want to correlate with the DEQ change scores
+psq20_variables = ['Overall_Score', 'Worries', 'Tension', 'Joy', 'Demands']  # Update with actual PSQ-20 column names if different
 psq20_correlations_dict = {}
 
+# Calculate and print correlations between PSQ-20 variables and DEQ change scores
 for psq20_variable in psq20_variables:
     psq20_correlations = calculate_correlations(merged_data, psq20_variable, change_scores)
     psq20_correlations_dict[psq20_variable] = psq20_correlations

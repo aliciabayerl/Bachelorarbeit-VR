@@ -34,10 +34,11 @@ def calculate_correlations(data, target_variable, variables):
         correlations[variable] = (corr, p_val)
     return correlations
 
-# Calculate and print correlations between PSQ-20 variables and POMS change scores
-psq20_variables = ['Overall_Score']  # Update with actual PSQ-20 column names if different
+# Define the PSQ-20 variables you want to correlate with the POMS change scores
+psq20_variables = ['Overall_Score', 'Worries', 'Tension', 'Joy', 'Demands']  # Update with actual PSQ-20 column names if different
 psq20_correlations_dict = {}
 
+# Calculate and print correlations between PSQ-20 variables and POMS change scores
 for psq20_variable in psq20_variables:
     psq20_correlations = calculate_correlations(merged_data, psq20_variable, change_scores)
     psq20_correlations_dict[psq20_variable] = psq20_correlations
@@ -57,5 +58,6 @@ def plot_correlations(correlations_dict, title):
     plt.grid(True)
     plt.show()
 
+# Plot the correlations for each PSQ-20 variable
 for psq20_variable in psq20_variables:
     plot_correlations(psq20_correlations_dict[psq20_variable], f"Correlations with {psq20_variable}")
