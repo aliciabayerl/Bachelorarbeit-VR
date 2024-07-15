@@ -52,3 +52,24 @@ for mood in ['Anger', 'Disgust', 'Fear', 'Anxiety', 'Sadness', 'Desire', 'Relaxa
         cohen_d = mean_diff / std_diff if std_diff != 0 else 0  # Avoid division by zero
         df = len(differences) - 1  # Calculate degrees of freedom
         print(f"{mood}: t-statistic = {t_stat:.4f}, p-value = {p_val:.4f}, Cohen's d = {cohen_d:.4f}, df = {df}")
+
+# Combine Conditions 1 and 2 for analysis
+combined_data = data[data['Condition'].isin([1, 2])]
+
+# Perform statistical analysis and calculate Cohen's d for combined Condition 1 and 2
+print("Statistical Analysis for Combined Condition 1 and 2:")
+for mood in mood_states:
+    combined_diff = combined_data[f'Difference_{mood}']
+    
+    # Paired t-test
+    t_stat, p_val = ttest_rel(combined_diff, [0] * len(combined_diff))
+    
+    # Calculate Cohen's d
+    mean_diff = combined_diff.mean()
+    std_diff = combined_diff.std()
+    cohen_d = mean_diff / std_diff
+    
+    # Calculate degrees of freedom
+    df = len(combined_diff) - 1
+    
+    print(f"{mood}: t-statistic = {t_stat:.4f}, p-value = {p_val:.4f}, Cohen's d = {cohen_d:.4f}, df = {df}")
