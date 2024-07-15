@@ -35,6 +35,7 @@ plt.rc('ytick', labelsize=9)  # Fontsize of the y tick labels
 plt.rc('legend', fontsize=9)  # Fontsize of the legend
 plt.rc('font', family='sans-serif')  # Use a sans-serif font
 plt.rc('font', **{'sans-serif': 'Arial'})  # Specifically use Arial
+plt.yticks(np.arange(-3.0, 2.5, 0.5))
 
 colors = ['#abd9e9' if stats['p-value'] > 0.05 else '#4575b4' for stats in summary_stats.values()]
 bars = sns.barplot(x=list(summary_stats.keys()), y=[data[f'Change_{mood}'].mean() for mood in mood_states], palette=colors)
@@ -42,9 +43,6 @@ bars = sns.barplot(x=list(summary_stats.keys()), y=[data[f'Change_{mood}'].mean(
 plt.xlabel('Mood State')
 plt.ylabel('Average Change')
 plt.axhline(0, color='black', linewidth=0.8) 
-plt.grid(True, linestyle='--', alpha=0.6)
-
-
 
 # Adding legend
 from matplotlib.patches import Patch
