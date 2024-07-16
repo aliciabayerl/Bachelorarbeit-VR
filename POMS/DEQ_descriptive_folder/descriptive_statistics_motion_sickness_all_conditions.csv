@@ -1,0 +1,9 @@
+,Before Mean (All Conditions),Before Median (All Conditions),Before Std Dev (All Conditions),Before Min (All Conditions),Before Max (All Conditions),Before Q1 (All Conditions),Before Q3 (All Conditions),Before IQR (All Conditions),After Mean (All Conditions),After Median (All Conditions),After Std Dev (All Conditions),After Min (All Conditions),After Max (All Conditions),After Q1 (All Conditions),After Q3 (All Conditions),After IQR (All Conditions)
+Anger,5.74,4.0,2.894391127681261,4.0,14.5,4.0,7.0,3.0,5.08,4.0,2.5806975801127883,4.0,14.5,4.0,4.0,0.0
+Disgust,5.68,4.0,3.0409702399069936,4.0,17.5,4.0,5.5,1.5,11.26,10.0,4.57602447545902,4.0,25.0,8.5,14.5,6.0
+Fear,6.1,4.0,3.774917217635375,4.0,19.0,4.0,7.0,3.0,5.86,4.0,2.5352514668174435,4.0,13.0,4.0,7.0,3.0
+Anxiety,9.7,10.0,3.724916106437835,4.0,16.0,7.0,13.0,6.0,8.2,8.5,3.648629879831606,4.0,17.5,5.5,11.5,6.0
+Sadness,7.3,5.5,4.860555523805895,4.0,23.5,4.0,8.5,4.5,6.58,5.5,3.737980738313134,4.0,20.5,4.0,7.0,3.0
+Desire,10.3,10.0,4.520785330006281,4.0,23.5,7.0,11.5,4.5,9.22,8.5,4.706113045816048,4.0,17.5,4.0,11.5,7.5
+Relaxation,16.0,16.0,5.744562646538029,5.5,28.0,13.0,20.5,7.5,15.7,16.0,6.334429729659963,4.0,25.0,11.5,20.5,9.0
+Happiness,14.68,14.5,5.361669516111563,4.0,25.0,11.5,19.0,7.5,14.74,14.5,5.979339428398425,4.0,23.5,11.5,20.5,9.0

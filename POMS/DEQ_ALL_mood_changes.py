@@ -46,6 +46,9 @@ plt.xlabel('Mood State')
 plt.ylabel('Average Change')
 plt.axhline(0, color='black', linewidth=0.8)
 
+plt.yticks(np.arange(-3.0, 3.0, 0.5))
+
+
 # Adding legend
 from matplotlib.patches import Patch
 legend_elements = [Patch(facecolor='#4575b4', label='Significant Change'),
