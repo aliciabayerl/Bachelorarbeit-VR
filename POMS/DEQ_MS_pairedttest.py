@@ -40,6 +40,7 @@ def analyze_and_plot(group_data, group_name):
         mean_diff = mood_change.mean()
         std_diff = mood_change.std()
         effect_size = cohen_d(mood_change, np.zeros(len(mood_change)))  # Calculate Cohen's d
+        df = len(mood_change) - 1  # Calculate degrees of freedom
 
         results.append({
             'Mood': mood,
@@ -47,10 +48,12 @@ def analyze_and_plot(group_data, group_name):
             'Standard Deviation': std_diff,
             'p-value': p_val,
             'Cohen\'s d': effect_size,
+            'Degrees of Freedom': df,
+            't-statistic': t_stat,
             'Group': group_name
         })
         
-        print(f"{group_name} - {mood}: Mean Difference = {mean_diff:.2f}, Std Dev = {std_diff:.2f}, p-value = {p_val:.4f}, Cohen's d = {effect_size:.2f}")
+        print(f"{group_name} - {mood}: Mean Difference = {mean_diff:.2f}, Std Dev = {std_diff:.2f}, p-value = {p_val:.4f}, Cohen's d = {effect_size:.2f}, df = {df}, t-statistic = {t_stat:.2f}")
 
     results_df = pd.DataFrame(results)
     plt.figure(figsize=(12, 8))
@@ -67,3 +70,21 @@ analyze_and_plot(no_motion_sickness, "No Motion Sickness")
 
 # Analyze and plot for motion sickness group
 analyze_and_plot(motion_sickness, "Motion Sickness")
+
+# Perform statistical analysis for each condition and all conditions combined
+def analyze_conditions(data, group_name):
+    conditions = data['Condition_x'].unique()
+    combined_conditions = [1, 2]  # Combining conditions 1 and 2
+
+    for condition in conditions:
+        condition_data = data[data['Condition_x'] == condition]
+        analyze_and_plot(condition_data, f"{group_name} - Condition {condition}")
+
+    combined_data = data[data['Condition_x'].isin(combined_conditions)]
+    analyze_and_plot(combined_data, f"{group_name} - Combined Condition 1 & 2")
+
+# Analyze for no motion sickness group
+analyze_conditions(no_motion_sickness, "No Motion Sickness")
+
+# Analyze for motion sickness group
+analyze_conditions(motion_sickness, "Motion Sickness")
