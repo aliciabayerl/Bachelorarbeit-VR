@@ -1,0 +1,54 @@
+import pandas as pd
+from scipy.stats import ttest_rel
+import os
+import numpy as np
+
+# Function to calculate Cohen's d for paired samples
+def cohen_d_paired(x):
+    return np.mean(x) / np.std(x, ddof=1)
+
+# Define file paths
+folder_path = 'POMS'
+input_file = 'questionnaire_with_scores.csv'
+file_path = os.path.join(folder_path, input_file)
+
+# Load the data
+data = pd.read_csv(file_path)
+
+# Verify column names to ensure the required column is present
+print(data.columns)
+
+# Filter data to include only conditions 1 and 2
+filtered_data = data[data['Condition_x'].isin([1, 2])]
+
+# Print the number of participants
+print(f"Total number of participants in conditions 1 and 2: {filtered_data.shape[0]}")
+
+# Calculate the change scores for each mood state for the filtered participants
+mood_states = ['Tension', 'Depression', 'Anger_x', 'Vigor', 'Fatigue', 'Confusion']
+
+for mood_state in mood_states:
+    filtered_data[f'Change_{mood_state}'] = filtered_data[f'After {mood_state}'] - filtered_data[f'Before {mood_state}']
+
+# Function to analyze and print the statistics for the filtered participants
+def analyze(filtered_data, group_name):
+    for mood in mood_states:
+        print(f"Statistical Analysis for {mood} ({group_name}):")
+        condition_diff = filtered_data[f'Change_{mood}']
+
+        # Paired t-test
+        t_stat, p_val = ttest_rel(filtered_data[f'After {mood}'], filtered_data[f'Before {mood}'])
+
+        # Calculate mean and standard deviation
+        mean_diff = condition_diff.mean()
+        std_diff = condition_diff.std()
+
+        # Calculate Cohen's d
+        cohen_d = cohen_d_paired(condition_diff)
+
+        # Print the results
+        print(f"t({len(condition_diff) - 1}) = {t_stat:.3f}, p = {p_val:.4f}, d = {cohen_d:.3f}")
+        print()
+
+# Analyze and print for the filtered participants
+analyze(filtered_data, "Conditions 1 and 2 Combined")
