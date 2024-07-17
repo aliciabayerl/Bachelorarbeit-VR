@@ -1,0 +1,61 @@
+import pandas as pd
+import os
+
+# Define the path to the folder and files
+folder_path = 'POMS'
+participant_scores_file = os.path.join(folder_path, 'participant_scores.csv')
+output_folder = os.path.join(folder_path, 'POMS_descriptive_folder')
+
+# Ensure the output folder exists
+os.makedirs(output_folder, exist_ok=True)
+
+# Load the data
+data = pd.read_csv(participant_scores_file)
+
+# Define mood states
+mood_states = ['Tension', 'Vigor', 'Confusion', 'Fatigue', 'Anger_x', 'Depression']
+
+# Function to calculate descriptive statistics
+def descriptive_statistics(data, conditions=None):
+    if conditions:
+        data = data[data['Condition'].isin(conditions)]
+    stats = {}
+    for mood in mood_states:
+        before_col = f'Before {mood}'
+        after_col = f'After {mood}'
+        stats[mood] = {
+            'Before Mean': round(data[before_col].mean(), 1),
+            'Before Std Dev': round(data[before_col].std(), 1),
+            'Before Min': round(data[before_col].min(), 1),
+            'Before Max': round(data[before_col].max(), 1),
+            'Before Median': round(data[before_col].median(), 1),
+            'Before Q1': round(data[before_col].quantile(0.25), 1),
+            'Before Q3': round(data[before_col].quantile(0.75), 1),
+            'Before IQR': round(data[before_col].quantile(0.75) - data[before_col].quantile(0.25), 1),
+
+            'After Mean': round(data[after_col].mean(), 1),
+            'After Std Dev': round(data[after_col].std(), 1),
+            'After Min': round(data[after_col].min(), 1),
+            'After Max': round(data[after_col].max(), 1),
+            'After Median': round(data[after_col].median(), 1),
+            'After Q1': round(data[after_col].quantile(0.25), 1),
+            'After Q3': round(data[after_col].quantile(0.75), 1),
+            'After IQR': round(data[after_col].quantile(0.75) - data[after_col].quantile(0.25), 1)
+
+        }
+    return pd.DataFrame(stats).T  # Transpose to have mood states as rows
+
+# Calculate and save stats for all participants
+all_stats = descriptive_statistics(data)
+all_stats.to_csv(os.path.join(output_folder, 'all_participants_stats.csv'))
+
+# Calculate and save stats by each condition
+for condition in sorted(data['Condition'].unique()):
+    condition_stats = descriptive_statistics(data, [condition])
+    condition_stats.to_csv(os.path.join(output_folder, f'condition_{condition}_stats.csv'))
+
+# Calculate and save stats for combined conditions (1 and 2)
+combined_stats = descriptive_statistics(data, [1, 2])
+combined_stats.to_csv(os.path.join(output_folder, 'combined_conditions_1_and_2_stats.csv'))
+
+print("Descriptive statistics for all and each condition have been calculated and saved.")

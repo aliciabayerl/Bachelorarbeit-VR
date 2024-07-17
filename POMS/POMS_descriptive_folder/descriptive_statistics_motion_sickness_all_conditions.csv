@@ -1,0 +1,7 @@
+,Before Mean (All Conditions),Before Median (All Conditions),Before Std Dev (All Conditions),Before Min (All Conditions),Before Max (All Conditions),Before Q1 (All Conditions),Before Q3 (All Conditions),Before IQR (All Conditions),After Mean (All Conditions),After Median (All Conditions),After Std Dev (All Conditions),After Min (All Conditions),After Max (All Conditions),After Q1 (All Conditions),After Q3 (All Conditions),After IQR (All Conditions)
+Tension,2.84,2.0,2.2487033300697243,0.0,9.0,1.0,4.0,3.0,2.24,2.0,2.454248017893329,0.0,10.0,0.0,3.0,3.0
+Vigor,7.6,8.0,3.095695936834452,1.0,13.0,5.0,11.0,6.0,6.72,6.0,3.034798181098704,2.0,13.0,4.0,9.0,5.0
+Confusion,4.16,3.0,3.1712247896777463,0.0,11.0,1.0,7.0,6.0,4.92,5.0,2.8565713714171403,0.0,11.0,3.0,7.0,4.0
+Fatigue,6.56,6.0,3.7758001359535265,0.0,15.0,4.0,9.0,5.0,5.4,5.0,3.013856886670854,0.0,11.0,3.0,8.0,5.0
+Anger,5.74,4.0,2.894391127681261,4.0,14.5,4.0,7.0,3.0,5.08,4.0,2.5806975801127887,4.0,14.5,4.0,4.0,0.0
+Depression,3.76,3.0,3.2822756333576457,0.0,13.0,1.0,5.0,4.0,2.8,3.0,2.345207879911715,0.0,10.0,1.0,4.0,3.0
