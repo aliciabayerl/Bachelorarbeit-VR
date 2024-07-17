@@ -26,7 +26,7 @@ def calculate_effect_size(stat, n):
     return abs(r)
 
 # List of mood states to analyze
-mood_states = ['Tension', 'Vigor', 'Confusion', 'Fatigue', 'Anger_x', 'Depression']
+mood_states = ['Tension', 'Vigor', 'Confusion', 'Fatigue', 'Anger', 'Depression']
 
 print("\nAnalyzing all participants:")
 
