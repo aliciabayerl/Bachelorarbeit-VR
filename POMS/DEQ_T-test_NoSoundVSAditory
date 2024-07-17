@@ -48,7 +48,8 @@ for mood in mood_states:
         # Independent two-sample t-test
         t_stat, p_val = ttest_ind(no_sound_diff, auditory_stimuli_diff)
         cohen_d = cohen_d_independent(no_sound_diff, auditory_stimuli_diff)
-        print(f"No Sound vs. Auditory Stimuli: p-value = {p_val:.4f}, Cohen's d = {cohen_d:.4f}")
+        dof = len(no_sound_diff) + len(auditory_stimuli_diff) - 2
+        print(f"No Sound vs. Auditory Stimuli: p-value = {p_val:.4f}, Cohen's d = {cohen_d:.4f}, t-statistic = {t_stat:.4f}, df = {dof}")
     else:
         print("Insufficient data for t-test.")
 
@@ -67,16 +68,17 @@ for mood in mood_states:
         # Independent two-sample t-test
         t_stat, p_val = ttest_ind(no_sound_diff, auditory_stimuli_diff)
         cohen_d = cohen_d_independent(no_sound_diff, auditory_stimuli_diff)
+        dof = len(no_sound_diff) + len(auditory_stimuli_diff) - 2
         
-        results_no_sound.append([mood, len(no_sound_diff), no_sound_diff.mean(), no_sound_diff.std(), p_val, cohen_d])
-        results_auditory_stimuli.append([mood, len(auditory_stimuli_diff), auditory_stimuli_diff.mean(), auditory_stimuli_diff.std(), p_val, cohen_d])
+        results_no_sound.append([mood, len(no_sound_diff), no_sound_diff.mean(), no_sound_diff.std(), p_val, cohen_d, t_stat, dof])
+        results_auditory_stimuli.append([mood, len(auditory_stimuli_diff), auditory_stimuli_diff.mean(), auditory_stimuli_diff.std(), p_val, cohen_d, t_stat, dof])
     else:
-        results_no_sound.append([mood, len(no_sound_diff), None, None, None, None])
-        results_auditory_stimuli.append([mood, len(auditory_stimuli_diff), None, None, None, None])
+        results_no_sound.append([mood, len(no_sound_diff), None, None, None, None, None, None])
+        results_auditory_stimuli.append([mood, len(auditory_stimuli_diff), None, None, None, None, None, None])
 
 # Create DataFrames for No Sound and Auditory Stimuli results
-results_no_sound_df = pd.DataFrame(results_no_sound, columns=['Mood State', 'N', 'Mean', 'Std', 'p-value', 'Cohen\'s d'])
-results_auditory_stimuli_df = pd.DataFrame(results_auditory_stimuli, columns=['Mood State', 'N', 'Mean', 'Std', 'p-value', 'Cohen\'s d'])
+results_no_sound_df = pd.DataFrame(results_no_sound, columns=['Mood State', 'N', 'Mean', 'Std', 'p-value', 'Cohen\'s d', 't-statistic', 'df'])
+results_auditory_stimuli_df = pd.DataFrame(results_auditory_stimuli, columns=['Mood State', 'N', 'Mean', 'Std', 'p-value', 'Cohen\'s d', 't-statistic', 'df'])
 
 # Plot the compact table layout
 fig, (ax1, ax2) = plt.subplots(nrows=2, ncols=1, figsize=(10, 8))  # Two subplots, one for each condition
