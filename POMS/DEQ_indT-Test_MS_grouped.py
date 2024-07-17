@@ -52,7 +52,14 @@ for mood in mood_states:
 results_df = pd.DataFrame(results)
 
 # Plotting results
-plt.figure(figsize=(14, 8))
+plt.figure(figsize=(6, 4))
+plt.rc('axes', labelsize=10)  # Fontsize of the x and y labels
+plt.rc('xtick', labelsize=9)  # Fontsize of the x tick labels
+plt.rc('ytick', labelsize=9)  # Fontsize of the y tick labels
+plt.rc('legend', fontsize=9)  # Fontsize of the legend
+plt.rc('font', family='sans-serif')  # Use a sans-serif font
+plt.rc('font', **{'sans-serif': 'Arial'})  # Specifically use Arial
+
 group_means = no_motion_sickness.groupby('Combined_Condition')[[f'Change_{mood}' for mood in mood_states]].mean()
 colors = sns.color_palette("Blues", n_colors=2)
 bar_width = 0.35
@@ -63,7 +70,7 @@ for i, condition in enumerate(group_means.index):
 
 plt.xlabel('Mood State')
 plt.ylabel('Average Change')
-plt.title('Average Change in Mood States by Audio Condition')
+#plt.title('Average Change in Mood States by Audio Condition')
 plt.xticks(index + bar_width / 2, mood_states, rotation=45)
 plt.legend(title='Condition')
 plt.tight_layout()
