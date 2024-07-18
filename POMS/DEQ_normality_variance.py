@@ -47,15 +47,15 @@ for score in change_scores:
     print()
 
 # Plot settings for better readability on A4
-plt.rcParams.update({'font.size': 14, 'axes.titlesize': 16, 'axes.labelsize': 16, 'xtick.labelsize': 12, 'ytick.labelsize': 12, 'legend.fontsize': 14})
+plt.rcParams.update({'font.size': 14, 'axes.titlesize': 14, 'axes.labelsize': 12, 'xtick.labelsize': 12, 'ytick.labelsize': 12, 'legend.fontsize': 12})
 
 # Distribution plots
 plt.figure(figsize=(10.5, 7))  
 for i, score in enumerate(change_scores, 1):
     plt.subplot(2, 4, i)
     mood = score.split('_')[1]  
-    sns.histplot(data[score], kde=True)
-    plt.title(f'Change in {mood}')  
+    sns.histplot(data[score], kde=True, binwidth=3)
+    plt.title(f'{mood}')  
     plt.xlabel('Change Score')
     plt.ylabel('Frequency')
 
@@ -65,13 +65,14 @@ output_image = os.path.join(image_path, 'DEQ_distribution.png')
 plt.savefig(output_image, dpi=300)  # High resolution for A4 print
 plt.show()
 
-# Boxplots
-plt.figure(figsize=(21, 14))  # A4 size in inches
+# Boxplots with different colors
+plt.figure(figsize=(10.5, 7))  # A4 size in inches
+palette = ["#abd9e9", "#74add1", "#4575b4"]
 for i, score in enumerate(change_scores, 1):
     plt.subplot(2, 4, i)
-    sns.boxplot(x='Condition', y=score, data=data)
+    sns.boxplot(x='Condition', y=score, data=data, palette=palette)
     mood = score.split('_')[1]
-    plt.title(f'Change in {mood}')
+    plt.title(f'{mood}')
     plt.xlabel('Condition')
     plt.ylabel('Change Score')
 

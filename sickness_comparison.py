@@ -46,6 +46,7 @@ index = np.arange(len(mood_states))
 plt.bar(index, avg_change_motion_sickness, bar_width, label='Motion Sickness', color="#4575b4")
 plt.bar(index + bar_width, avg_change_no_motion_sickness, bar_width, label='No Motion Sickness', color="#abd9e9")
 
+
 plt.xlabel('Mood State')
 plt.ylabel('Average Change')
 #plt.title('Average Change in Mood States for Participants with and without Motion Sickness')
