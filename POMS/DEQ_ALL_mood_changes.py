@@ -1,6 +1,5 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-import seaborn as sns
 import numpy as np
 import os
 
@@ -39,15 +38,20 @@ plt.rc('legend', fontsize=9)  # Fontsize of the legend
 plt.rc('font', family='sans-serif')  # Use a sans-serif font
 plt.rc('font', **{'sans-serif': 'Arial'})  # Specifically use Arial
 
+# Define colors
 colors = ['#abd9e9' if stats['p-value'] > 0.05 else '#4575b4' for stats in summary_stats.values()]
-bars = sns.barplot(x=list(summary_stats.keys()), y=[data[f'Change_{mood}'].mean() for mood in mood_states], palette=colors)
 
+# Define bar positions and heights
+bar_positions = np.arange(len(mood_states))
+bar_heights = [data[f'Change_{mood}'].mean() for mood in mood_states]
+
+bars = plt.bar(bar_positions, bar_heights, color=colors, width=0.9)
+
+# Customize plot
 plt.xlabel('Mood State')
 plt.ylabel('Average Change')
 plt.axhline(0, color='black', linewidth=0.8)
-
-plt.yticks(np.arange(-3.0, 3.0, 0.5))
-
+plt.xticks(bar_positions, mood_states)
 
 # Adding legend
 from matplotlib.patches import Patch
