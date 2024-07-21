@@ -70,14 +70,20 @@ for group_name, group_data in groups.items():
             if len(counterpart_diff) > 0:
                 t_stat, p_val = ttest_ind(group_diff, counterpart_diff)
                 cohen_d = cohen_d_independent(group_diff, counterpart_diff)
-                results.append([group_name, mood_state, len(group_diff), group_diff.mean(), group_diff.std(), p_val, cohen_d])
+                results.append([group_name, mood_state, len(group_diff), group_diff.mean(), group_diff.std(), t_stat, p_val, cohen_d])
+                # Print the results for each test
+                print(f"{group_name} vs. {counterpart} for {mood_state}:")
+                print(f"  N: {len(group_diff)}, Mean: {group_diff.mean()}, Std: {group_diff.std()}")
+                print(f"  t-statistic: {t_stat:.4f}, p-value: {p_val:.4f}, Cohen's d: {cohen_d:.4f}")
             else:
-                results.append([group_name, mood_state, len(group_diff), group_diff.mean(), group_diff.std(), None, None])
+                results.append([group_name, mood_state, len(group_diff), group_diff.mean(), group_diff.std(), None, None, None])
+                print(f"Insufficient counterpart data for {group_name} vs. {counterpart} for {mood_state}.")
         else:
-            results.append([group_name, mood_state, len(group_diff), None, None, None, None])
+            results.append([group_name, mood_state, len(group_diff), None, None, None, None, None])
+            print(f"Insufficient data for {group_name} for {mood_state}.")
 
 # Create DataFrame for results
-results_df = pd.DataFrame(results, columns=['Group', 'Mood State', 'N', 'Mean', 'Std', 'p-value', 'Cohen\'s d'])
+results_df = pd.DataFrame(results, columns=['Group', 'Mood State', 'N', 'Mean', 'Std', 't-statistic', 'p-value', 'Cohen\'s d'])
 
 # Plot the results
 fig, ax = plt.subplots(figsize=(12, 10))
@@ -96,3 +102,7 @@ plt.tight_layout(rect=[0, 0.03, 1, 0.95])  # Adjust subplot layout
 output_image = os.path.join(image_path, 'POMS_statistical_analysis_motion_sickness_sound.png')
 plt.savefig(output_image)
 plt.show()
+
+# Print the DataFrame
+print("\nFinal Results DataFrame:")
+print(results_df)

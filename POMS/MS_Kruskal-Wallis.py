@@ -15,7 +15,7 @@ data['Change_Tension'] = data['After Tension'] - data['Before Tension']
 data['Change_Vigor'] = data['After Vigor'] - data['Before Vigor']
 data['Change_Confusion'] = data['After Confusion'] - data['Before Confusion']
 data['Change_Fatigue'] = data['After Fatigue'] - data['Before Fatigue']
-data['Change_Anger'] = data['After Anger_x'] - data['Before Anger_x']
+data['Change_Anger'] = data['After Anger'] - data['Before Anger']
 data['Change_Depression'] = data['After Depression'] - data['Before Depression']
 
 change_scores = [

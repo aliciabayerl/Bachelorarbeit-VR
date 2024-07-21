@@ -1,59 +1,53 @@
 import pandas as pd
 import os
-from scipy.stats import kruskal
-from scikit_posthocs import posthoc_dunn
-import numpy as np
-from numpy import mean, sqrt
+import pandas as pd
+import os
+from scipy.stats import shapiro, levene, kruskal
+import matplotlib.pyplot as plt
+import seaborn as sns
+import scikit_posthocs as sp
 
-# Load your data
+# Load the data
 folder_path = 'POMS'
 input_file = 'participant_scores.csv'
 file_path = os.path.join(folder_path, input_file)
 data = pd.read_csv(file_path)
 
-# Create change scores for each mood state
-data['Change_Tension'] = data['After Tension'] - data['Before Tension']
-data['Change_Vigor'] = data['After Vigor'] - data['Before Vigor']
-data['Change_Confusion'] = data['After Confusion'] - data['Before Confusion']
-data['Change_Fatigue'] = data['After Fatigue'] - data['Before Fatigue']
-data['Change_Anger'] = data['After Anger_x'] - data['Before Anger_x']
-data['Change_Depression'] = data['After Depression'] - data['Before Depression']
+# Calculate change scores
+mood_states = ['Tension', 'Depression', 'Anger_x', 'Vigor', 'Fatigue', 'Confusion']
+for mood in mood_states:
+    data[f'Change_{mood}'] = data[f'After {mood}'] - data[f'Before {mood}']
 
-change_scores = [
-    'Change_Tension', 'Change_Vigor', 'Change_Confusion', 'Change_Fatigue', 
-    'Change_Anger', 'Change_Depression'
-]
+change_scores = [f'Change_{mood}' for mood in mood_states]
+groups = [data[data['Condition'] == i] for i in range(3)]
 
-# Split the data into the conditions
-groups = [data[data['Condition'] == 0], data[data['Condition'] == 1], data[data['Condition'] == 2]]
-
-def cohen_d(x, y):
-    nx = len(x)
-    ny = len(y)
-    dof = nx + ny - 2
-    return (mean(x) - mean(y)) / sqrt(((nx-1)*np.var(x, ddof=1) + (ny-1)*np.var(y, ddof=1)) / dof)
-
-print("Kruskal-Wallis Test Results with Effect Size:")
+print("Kruskal-Wallis Test Results and Effect Sizes:")
 for score in change_scores:
-    stat, p_value = kruskal(groups[0][score], groups[1][score], groups[2][score])
-    
-    # Epsilon Squared calculation
+    stat, p_value = kruskal(*[group[score] for group in groups])
     n = len(data)
     k = len(groups)
     epsilon_squared = (stat - k + 1) / (n - k)
-    
-    print(f'{score}: Statistics={stat}, p-value={p_value}, Epsilon Squared={epsilon_squared:.4f}')
-    
-    # Effect size calculation for all pairs
-    for i in range(len(groups)):
-        for j in range(i + 1, len(groups)):
-            effect_size = cohen_d(groups[i][score].dropna(), groups[j][score].dropna())
-            print(f'Effect Size (Cohen\'s d) between Group {i} and Group {j} for {score}: {effect_size:.4f}')
+    print(f'{score}: Statistics={stat:.2f}, p-value={p_value:.4f}, Epsilon Squared={epsilon_squared:.4f}')
     
     if p_value < 0.05:
         print(f'There is a significant difference in {score} across the groups')
-        dunn_results = posthoc_dunn(data, val_col=score, group_col='Condition')
+        
+        # Perform Dunn's post-hoc test with Holm-Bonferroni correction
+        dunn_results = sp.posthoc_dunn(data, val_col=score, group_col='Condition', p_adjust='holm')
+        print("Dunn's Post-Hoc Test Results with Holm-Bonferroni Correction:")
         print(dunn_results)
-    #else:
-        #print(f'There is no significant difference in {score} across the groups')
-    #print()
+        
+        # Calculate effect size for Dunn's test pairwise comparisons
+        print("Pairwise Effect Sizes (r):")
+        for i in range(k):
+            for j in range(i + 1, k):
+                group_i = groups[i][score].dropna()
+                group_j = groups[j][score].dropna()
+                pooled_std = ((len(group_i) - 1) * group_i.std() ** 2 + (len(group_j) - 1) * group_j.std() ** 2) / (len(group_i) + len(group_j) - 2)
+                pooled_std = pooled_std ** 0.5
+                mean_diff = group_i.mean() - group_j.mean()
+                r = mean_diff / pooled_std
+                print(f'Condition {i} vs Condition {j}: r = {r:.4f}')
+    else:
+        print(f'There is no significant difference in {score} across the groups')
+    print()
