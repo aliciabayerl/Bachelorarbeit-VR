@@ -1,0 +1,79 @@
+import pandas as pd
+from scipy.stats import ttest_rel
+import os
+import numpy as np
+
+# Load your data
+folder_path = 'POMS'
+input_file = 'POMS_MS_participant_scores.csv'
+file_path = os.path.join(folder_path, input_file)
+data = pd.read_csv(file_path)
+
+def bootstrap(data, num_samples=1000):
+    n = len(data)
+    bootstrap_samples = np.random.choice(data, (num_samples, n), replace=True)
+    bootstrap_means = np.mean(bootstrap_samples, axis=1)
+    return np.percentile(bootstrap_means, [2.5, 97.5])
+
+def calculate_effect_size(stat, n):
+    # Calculate Cohen's d for paired samples
+    return stat / np.sqrt(n)
+
+alpha = 0.05
+
+# List of mood states to analyze
+mood_states = ['Tension', 'Depression', 'Anger', 'Vigor', 'Fatigue', 'Confusion']
+
+# Function to analyze and print results for a given condition
+def analyze_condition(condition_data, condition_name):
+    print(f"\nAnalyzing {condition_name}:")
+    for mood in mood_states:
+        before_col = f'Before {mood}'
+        after_col = f'After {mood}'
+        
+        before_scores = condition_data[before_col]
+        after_scores = condition_data[after_col]
+        
+        differences = after_scores - before_scores
+        
+        # Apply bootstrapping only if there are enough samples
+        if len(before_scores) > 1 and len(after_scores) > 1:
+            ci = bootstrap(differences)
+            print(f"95% Confidence Interval for {mood}: {ci}")
+        else:
+            print(f"Not enough data to perform bootstrap for {mood}.")
+        
+        if np.all(differences == 0):
+            print(f"No changes detected in {mood}, skipping t-test.")
+        else:
+            # Perform dependent t-test
+            stat, p_value = ttest_rel(before_scores, after_scores)
+            
+            # Calculate the effect size
+            n = len(before_scores)
+            effect_size = calculate_effect_size(stat, n)
+        
+            # Print the t-test result, effect size, and confidence interval
+            print(f'Change_{mood}: t-statistic={stat:.3f}, p={p_value:.3f}, Effect Size (Cohen\'s d)={effect_size:.3f}')
+            
+            # Determine significance based on alpha level
+            # if p_value < alpha:
+            #     print(f'Reject the null hypothesis: There is a significant change in {mood}.')
+            # else:
+            #     print(f'Fail to reject the null hypothesis: There is no significant change in {mood}.')
+
+# Analyze Condition 0
+condition_0_data = data[data['Condition_x'] == 0]
+analyze_condition(condition_0_data, "Condition 0")
+
+# Analyze Condition 1
+condition_1_data = data[data['Condition_x'] == 1]
+analyze_condition(condition_1_data, "Condition 1")
+
+# Analyze Condition 2
+condition_2_data = data[data['Condition_x'] == 2]
+analyze_condition(condition_2_data, "Condition 2")
+
+# Analyze Conditions 1 and 2 combined
+condition_1_2_data = data[data['Condition_x'].isin([1, 2])]
+analyze_condition(condition_1_2_data, "Conditions 1 and 2 combined")

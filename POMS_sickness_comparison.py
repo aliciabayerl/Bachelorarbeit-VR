@@ -28,11 +28,20 @@ avg_change_motion_sickness = motion_sickness[[f'Change {state}' for state in moo
 avg_change_no_motion_sickness = no_motion_sickness[[f'Change {state}' for state in mood_states]].mean()
 
 plt.figure(figsize=(12, 8))
+plt.figure(figsize=(6, 4))  # Adjust figure size to be smaller
+plt.rc('axes', labelsize=10)  # Fontsize of the x and y labels
+plt.rc('xtick', labelsize=9)  # Fontsize of the x tick labels
+plt.rc('ytick', labelsize=9)  # Fontsize of the y tick labels
+plt.rc('legend', fontsize=9)  # Fontsize of the legend
+plt.rc('font', family='sans-serif')  # Use a sans-serif font
+plt.rc('font', **{'sans-serif': 'Arial'})  # Specifically use Arial
+
 bar_width = 0.35
 index = np.arange(len(mood_states)) 
 
 plt.bar(index, avg_change_motion_sickness, bar_width, label='Motion Sickness', color="#4575b4")
 plt.bar(index + bar_width, avg_change_no_motion_sickness, bar_width, label='No Motion Sickness', color="#abd9e9")
+
 
 plt.xlabel('Mood State')
 plt.ylabel('Average Change')
