@@ -43,3 +43,4 @@ folder_path = 'POMS'
 output_file = 'demographics_table.csv'
 output_path = os.path.join(folder_path, output_file)
 demographics_table.to_csv(output_path, index=False)
+

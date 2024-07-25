@@ -1,8 +1,9 @@
+import os
 import pandas as pd
 import numpy as np
-import os
 import matplotlib.pyplot as plt
 from math import pi
+from scipy.stats import shapiro, levene
 
 def map_5_to_7_scale(value):
     scale_mapping = {
@@ -77,17 +78,19 @@ def compute_ipq_means(data, ipq_items):
         if valid_items:
             data[f'{category}_mean'] = data[valid_items].mean(axis=1)
             data[f'{category}_median'] = data[valid_items].median(axis=1)
-
         else:
             data[f'{category}_mean'] = None
             data[f'{category}_median'] = None
 
+    # Compute overall presence mean and median
+    data['Overall_Presence_mean'] = data[['SP_mean', 'INV_mean', 'REAL_mean']].mean(axis=1)
+    data['Overall_Presence_median'] = data[['SP_mean', 'INV_mean', 'REAL_mean']].median(axis=1)
 
     data['Participant'] = data.index + 1
 
 compute_ipq_means(data, ipq_items)
-selected_columns = ['Condition','Participant'] + [f'{category}_mean' for category in ipq_items.keys()]
-selected_columns2 = ['Condition','Participant'] + [f'{category}_median' for category in ipq_items.keys()]
+selected_columns = ['Condition', 'Participant'] + [f'{category}_mean' for category in ipq_items.keys()] + ['Overall_Presence_mean']
+selected_columns2 = ['Condition', 'Participant'] + [f'{category}_median' for category in ipq_items.keys()] + ['Overall_Presence_median']
 
 ipq_scores_data = data[selected_columns]
 ipq_scores_data2 = data[selected_columns2]
@@ -101,7 +104,47 @@ output_file_path2 = os.path.join(folder_path, output_file2)
 ipq_scores_data.to_csv(output_file_path, index=False)
 ipq_scores_data2.to_csv(output_file_path2, index=False)
 
+# Descriptive statistics for all participants
+desc_stats_all = ipq_scores_data.describe().T
+desc_stats_all['IQR'] = desc_stats_all['75%'] - desc_stats_all['25%']
+desc_stats_all = desc_stats_all[['mean', 'std', '50%', 'IQR', '25%', '75%', 'min', 'max']]
+print("Descriptive Statistics for All Participants:\n", desc_stats_all)
 
+# Descriptive statistics for each condition
+conditions = data['Condition'].unique()
+desc_stats_by_condition = {}
+
+for condition in conditions:
+    condition_data = ipq_scores_data[data['Condition'] == condition]
+    desc_stats = condition_data.describe().T
+    desc_stats['IQR'] = desc_stats['75%'] - desc_stats['25%']
+    desc_stats = desc_stats[['mean', 'std', '50%', 'IQR', '25%', '75%', 'min', 'max']]
+    desc_stats_by_condition[condition] = desc_stats
+    print(f"Descriptive Statistics for Condition {condition}:\n", desc_stats)
+
+
+# Normality and variance tests
+categories = ['SP', 'INV', 'REAL', 'Overall_Presence']
+
+print("Normality Tests:")
+for category in categories:
+    stat, p_value = shapiro(ipq_scores_data[f'{category}_mean'].dropna())
+    print(f'{category}: Statistics={stat}, p-value={p_value}')
+    if p_value > 0.05:
+        print(f'{category} mean is normally distributed\n')
+    else:
+        print(f'{category} mean is not normally distributed\n')
+
+print("Homogeneity of Variance Tests:")
+for category in categories:
+    stat, p_value = levene(ipq_scores_data[ipq_scores_data['Condition'] == 0][f'{category}_mean'],
+                           ipq_scores_data[ipq_scores_data['Condition'] == 1][f'{category}_mean'],
+                           ipq_scores_data[ipq_scores_data['Condition'] == 2][f'{category}_mean'])
+    print(f'{category}: Statistics={stat}, p-value={p_value}')
+    if p_value > 0.05:
+        print(f'Variances for {category} are equal across groups\n')
+    else:
+        print(f'Variances for {category} are not equal across groups\n')
 
 
 categories = ['SP', 'INV', 'REAL']
