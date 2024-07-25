@@ -48,7 +48,7 @@ for score in change_scores:
 plt.rcParams.update({'font.size': 14, 'axes.titlesize': 14, 'axes.labelsize': 12, 'xtick.labelsize': 12, 'ytick.labelsize': 12, 'legend.fontsize': 12})
 
 # Distribution plots
-plt.figure(figsize=(10.5, 7))  
+plt.figure(figsize=(8, 6.5))
 for i, score in enumerate(change_scores, 1):
     plt.subplot(2, 3, i)
     mood = score.split('_')[1]  
@@ -64,7 +64,7 @@ plt.savefig(output_image, dpi=300)  # High resolution for A4 print
 plt.show()
 
 # Boxplots with different colors
-plt.figure(figsize=(10.5, 7))  # A4 size in inches
+plt.figure(figsize=(8, 6.5))
 palette = ["#abd9e9", "#74add1", "#4575b4"]
 for i, score in enumerate(change_scores, 1):
     plt.subplot(2, 3, i)
@@ -80,7 +80,7 @@ plt.savefig(output_image_boxplot, dpi=300)  # High resolution for A4 print
 plt.show()
 
 # Bar plots
-plt.figure(figsize=(10.5, 7))  # A4 size in inches
+plt.figure(figsize=(8, 6.5))
 
 # Calculate mean and standard error for each mood state by condition
 mean_se_data = data.groupby('Condition')[change_scores].agg(['mean', 'sem']).reset_index()
