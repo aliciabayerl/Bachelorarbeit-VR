@@ -52,7 +52,7 @@ plt.figure(figsize=(10.5, 7))
 for i, score in enumerate(change_scores, 1):
     plt.subplot(2, 4, i)
     mood = score.split('_')[1]  
-    sns.histplot(data[score].to_numpy(), kde=True, binwidth=3)  # Explicitly convert to numpy array
+    sns.histplot(data[score].values, kde=True, binwidth=3)  # Explicitly convert to numpy array
     plt.title(f'{mood}')  
     plt.xlabel('Change Score')
     plt.ylabel('Frequency')
@@ -77,4 +77,26 @@ for i, score in enumerate(change_scores, 1):
 plt.tight_layout()
 output_image_boxplot = os.path.join(image_path, 'POMS_Boxplot.png')
 plt.savefig(output_image_boxplot, dpi=300)  # High resolution for A4 print
+plt.show()
+
+# Bar plots
+plt.figure(figsize=(10.5, 7))  # A4 size in inches
+
+# Calculate mean and standard error for each mood state by condition
+mean_se_data = data.groupby('Condition')[change_scores].agg(['mean', 'sem']).reset_index()
+
+# Plot each mood state in a separate subplot
+for i, score in enumerate(change_scores, 1):
+    plt.subplot(2, 4, i)
+    mood = score.split('_')[1]
+    means = mean_se_data[(score, 'mean')]
+    sems = mean_se_data[(score, 'sem')]
+    plt.bar(mean_se_data['Condition'], means, yerr=sems, color=palette)
+    plt.title(f'{mood}')
+    plt.xlabel('Condition')
+    plt.ylabel('Change Score')
+
+plt.tight_layout()
+output_image_barplot = os.path.join(image_path, 'POMS_Barplot.png')
+plt.savefig(output_image_barplot, dpi=300)  # High resolution for A4 print
 plt.show()
