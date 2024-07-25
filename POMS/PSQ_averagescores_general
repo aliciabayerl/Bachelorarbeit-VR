@@ -1,8 +1,8 @@
-# Plotting the changes
 import pandas as pd
 import os
 import matplotlib.pyplot as plt
 import seaborn as sns
+from scipy.stats import shapiro, levene
 
 # Define folder and file paths
 folder_path = 'POMS'
@@ -19,16 +19,45 @@ mood_states = ['Worries', 'Tension', 'Joy', 'Demands', 'Overall_Score']
 # Calculate overall average PSQ scores for each mood state
 average_scores = [participant_scores[mood_state].mean() for mood_state in mood_states]
 
+# Test for normality
+normality_results = {}
+for mood_state in mood_states:
+    stat, p_value = shapiro(participant_scores[mood_state].dropna())
+    normality_results[mood_state] = {'W': stat, 'p-value': p_value}
+
+# Test for homogeneity of variances
+homogeneity_results = {}
+for mood_state in mood_states:
+    stat, p_value = levene(participant_scores[mood_state].dropna(), participant_scores[mood_state].dropna())
+    homogeneity_results[mood_state] = {'W': stat, 'p-value': p_value}
+
+# Print normality results
+print("Normality Test Results (Shapiro-Wilk):")
+for mood_state, result in normality_results.items():
+    print(f"{mood_state}: W = {result['W']:.4f}, p-value = {result['p-value']:.4f}")
+
+# Print homogeneity results
+print("\nHomogeneity of Variance Test Results (Levene):")
+for mood_state, result in homogeneity_results.items():
+    print(f"{mood_state}: W = {result['W']:.4f}, p-value = {result['p-value']:.4f}")
+
 # Create a bar plot
-fig, ax = plt.subplots(figsize=(10, 6))
+palette = ["#4575b4"]
+plt.figure(figsize=(6, 4))
+plt.rc('axes', labelsize=10)  # Fontsize of the x and y labels
+plt.rc('xtick', labelsize=9)  # Fontsize of the x tick labels
+plt.rc('ytick', labelsize=9)  # Fontsize of the y tick labels
+plt.rc('legend', fontsize=9)  # Fontsize of the legend
+plt.rc('font', family='sans-serif')  # Use a sans-serif font
+plt.rc('font', **{'sans-serif': 'Arial'})  # Specifically use Arial
 
-ax.bar(mood_states, average_scores, color='#4575b4')
-
+# Create the bar plot
+plt.bar(mood_states, average_scores, color=palette)
 # Set plot labels and title
-ax.set_xlabel('Mood State')
-ax.set_ylabel('Average Score')
-#ax.set_title('Overall Average PSQ Scores')
-plt.grid(True)
+plt.xlabel('Mood State')
+plt.ylabel('Average Score')
+plt.title('Overall Average PSQ Scores')
+#plt.grid(True)
 
 # Save plot
 output_image = os.path.join(image_path, 'PSQ_overall_average_scores_plot.png')
@@ -36,4 +65,3 @@ plt.savefig(output_image)
 
 # Show plot
 plt.show()
-
