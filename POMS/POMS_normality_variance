@@ -50,7 +50,7 @@ plt.rcParams.update({'font.size': 14, 'axes.titlesize': 14, 'axes.labelsize': 12
 # Distribution plots
 plt.figure(figsize=(10.5, 7))  
 for i, score in enumerate(change_scores, 1):
-    plt.subplot(2, 4, i)
+    plt.subplot(2, 3, i)
     mood = score.split('_')[1]  
     sns.histplot(data[score].values, kde=True, binwidth=3)  # Explicitly convert to numpy array
     plt.title(f'{mood}')  
@@ -67,7 +67,7 @@ plt.show()
 plt.figure(figsize=(10.5, 7))  # A4 size in inches
 palette = ["#abd9e9", "#74add1", "#4575b4"]
 for i, score in enumerate(change_scores, 1):
-    plt.subplot(2, 4, i)
+    plt.subplot(2, 3, i)
     sns.boxplot(x='Condition', y=score, data=data, palette=palette)
     mood = score.split('_')[1]
     plt.title(f'{mood}')
@@ -87,7 +87,7 @@ mean_se_data = data.groupby('Condition')[change_scores].agg(['mean', 'sem']).res
 
 # Plot each mood state in a separate subplot
 for i, score in enumerate(change_scores, 1):
-    plt.subplot(2, 4, i)
+    plt.subplot(2, 3, i)
     mood = score.split('_')[1]
     means = mean_se_data[(score, 'mean')]
     sems = mean_se_data[(score, 'sem')]
