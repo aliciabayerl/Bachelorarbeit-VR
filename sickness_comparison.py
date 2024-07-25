@@ -31,7 +31,6 @@ for mood_state in mood_states:
 avg_change_motion_sickness = motion_sickness[[f'Change {state}' for state in mood_states]].mean()
 avg_change_no_motion_sickness = no_motion_sickness[[f'Change {state}' for state in mood_states]].mean()
 
-plt.figure(figsize=(12, 8))
 plt.figure(figsize=(6, 4))  # Adjust figure size to be smaller
 plt.rc('axes', labelsize=10)  # Fontsize of the x and y labels
 plt.rc('xtick', labelsize=9)  # Fontsize of the x tick labels
