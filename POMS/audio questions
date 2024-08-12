@@ -1,0 +1,33 @@
+import pandas as pd
+import os
+
+# Load the CSV file
+
+folder_path = 'POMS'
+input_file = 'questionnaire_with_scores.csv'
+image_path = 'POMS/Plot_Images'
+file_path = os.path.join(folder_path, input_file)
+df = pd.read_csv(file_path)
+
+# Count the number of "Yes" responses to the question "Did you perceive the audio as calming?"
+yes_count = df['Did you perceive the audio as calming?'].str.lower().value_counts().get('yes', 0)
+
+# Calculate the percentage
+total_responses = len(df)
+percent_yes = (yes_count / total_responses) * 100
+
+# Print the result
+print(f"Percentage of people who said 'Yes' to the question 'Did you perceive the audio as calming?': {percent_yes:.2f}%")
+
+# Filter the DataFrame for Condition_x values of 1 and 2
+filtered_df = df[df['Condition_x'].isin([1, 2])]
+
+# Count the number of "Yes" responses in the filtered DataFrame
+yes_count = filtered_df['Did you perceive the audio as calming?'].str.lower().value_counts().get('yes', 0)
+
+# Calculate the percentage
+total_responses = len(filtered_df)
+percent_yes = (yes_count / total_responses) * 100
+
+# Print the result
+print(f"Percentage of 'Yes' responses for conditions 1 and 2 combined: {percent_yes:.2f}%")
